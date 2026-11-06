@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Emotion Lab — Hissiyot tahlili</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --line: #2b3855;
+            --text: #eef4ff;
+            --muted: #9aabc8;
+            --blue: #73a7ff;
+            --cyan: #54e0d0
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(ellipse at top left, #182b4c, transparent 45%), var(--bg);
+            color: var(--text);
+            font: 15px/1.5 system-ui, Arial, sans-serif
+        }
+
+        button,
+        textarea {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-weight: 700;
+            background: var(--blue);
+            color: #07111f;
+            transition: .15s
+        }
+
+        button:hover {
+            filter: brightness(1.1)
+        }
+
+        button:disabled {
+            opacity: .45;
+            cursor: not-allowed
+        }
+
+        .sec {
+            background: #243452;
+            color: #fff;
+            border: 1px solid var(--line)
+        }
+
+        .dng {
+            background: #432637;
+            color: #ffd8e8
+        }
+
+        .on {
+            background: var(--cyan) !important;
+            color: #07111f !important
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: auto;
+            padding: 24px 16px
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #638fff, #53e0d0);
+            color: #07111f;
+            font-size: 25px;
+            font-weight: 700
+        }
+
+        .eyebrow {
+            color: var(--cyan);
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-weight: 700
+        }
+
+        h1 {
+            font-size: clamp(22px, 3vw, 32px);
+            margin: 2px 0
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 0 0 4px
+        }
+
+        .sub,
+        .hint,
+        .footer,
+        .intro {
+            color: var(--muted)
+        }
+
+        .intro {
+            max-width: 780px;
+            margin-bottom: 22px
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 6px 11px;
+            color: var(--muted);
+            font-size: 12px;
+            white-space: nowrap
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 18px
+        }
+
+        .panel {
+            grid-column: span 6;
+            min-width: 0;
+            padding: 20px;
+            background: linear-gradient(180deg, #18233b, #121a2d);
+            border: 1px solid var(--line);
+            border-radius: 18px
+        }
+
+        .full {
+            grid-column: span 12
+        }
+
+        .ph {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            resize: vertical;
+            background: #0c1425;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px;
+            color: #fff;
+            outline: none
+        }
+
+        textarea:focus {
+            border-color: var(--blue)
+        }
+
+        .act {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px
+        }
+
+        .hint {
+            font-size: 12px;
+            margin-top: 10px
+        }
+
+        .result {
+            padding: 20px 10px;
+            text-align: center;
+            border: 1px dashed var(--line);
+            border-radius: 12px
+        }
+
+        .re {
+            font-size: 44px
+        }
+
+        .rn {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 4px
+        }
+
+        .sr {
+            display: grid;
+            grid-template-columns: 110px 1fr 40px;
+            gap: 9px;
+            align-items: center;
+            margin: 11px 0;
+            font-size: 12px
+        }
+
+        .track {
+            height: 8px;
+            background: #27334c;
+            border-radius: 20px;
+            overflow: hidden
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width .4s
+        }
+
+        .sc {
+            text-align: right;
+            color: var(--muted)
+        }
+
+        .adv {
+            background: #0e1729;
+            border: 1px solid var(--line);
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 14px
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px
+        }
+
+        .chip {
+            font-size: 12px;
+            padding: 3px 9px;
+            border-radius: 12px;
+            border: 1px solid
+        }
+
+        .cam {
+            position: relative;
+            aspect-ratio: 4/3;
+            background: #080d17;
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            overflow: hidden;
+            display: grid;
+            place-items: center
+        }
+
+        .cam video,
+        .cam canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1)
+        }
+
+        .cph {
+            text-align: center;
+            color: var(--muted);
+            padding: 15px
+        }
+
+        .cph .e {
+            font-size: 38px
+        }
+
+        .msg {
+            color: var(--cyan);
+            font-size: 12px;
+            margin-top: 10px;
+            overflow-wrap: anywhere;
+            min-height: 18px
+        }
+
+        #wave {
+            width: 100%;
+            height: 90px;
+            background: #0c1425;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            margin: 6px 0
+        }
+
+        .meter {
+            height: 12px;
+            background: #27334c;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 10px 0 8px
+        }
+
+        #micFill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #54e0d0, #73a7ff, #f18ac7)
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .stats b {
+            display: block;
+            color: var(--text);
+            font-size: 16px
+        }
+
+        .hl {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px
+        }
+
+        #trend {
+            width: 100%;
+            height: 110px;
+            background: #0c1425;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            margin-bottom: 10px
+        }
+
+        .notice {
+            font-size: 12px;
+            color: #e8d7b0;
+            margin-top: 14px
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 24px
+        }
+
+        [hidden] {
+            display: none !important
+        }
+
+        @media(max-width:750px) {
+            .panel {
+                grid-column: span 12;
+                padding: 15px
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div class="brand">
+                <div class="logo">N</div>
+                <div>
+                    <div class="eyebrow">NEURAL EMOTION LAB</div>
+                    <h1>Hissiyot tahlili</h1>
+                </div>
+            </div>
+            <div class="pill" id="appStatus">Tizim tayyor</div>
+        </header>
+        <p class="intro">Matn, ovozli kiritish, kamera (yuz ifodasi) va mikrofon signalini tahlil qiling. Matn va yuz
+            natijalari birlashtirilib umumiy xulosa chiqariladi. Natijalar taxminiy.</p>
+
+        <div class="adv" id="env" hidden style="margin:0 0 18px;border-color:#f7c96b;color:#f7e3b0"></div>
+        <div class="grid">
+            <section class="panel">
+                <div class="ph">
+                    <div>
+                        <h2>✍️ Matn tahlili</h2>
+                        <div class="sub">Lotin va kirill yozuvi, inkor va kuchaytiruvchi so‘zlar hisobga olinadi</div>
+                    </div><span class="pill">Darhol</span>
+                </div>
+                <textarea id="ti" placeholder="Masalan: Bugun juda xursandman, hammasi ajoyib!"></textarea>
+                <div class="act">
+                    <button id="bText">Tahlil qilish</button>
+                    <button class="sec" id="bDict">🎤 Ovoz bilan yozish</button>
+                    <button class="sec" id="bSample">Namuna</button>
+                    <button class="sec" id="bClear">Tozalash</button>
+                </div>
+                <div class="hint">Lug‘at + qoidalar asosida (o‘zak qidirish, “emas/yo‘q” inkori, “juda” kuchaytirgichi,
+                    emoji, “!” belgisi).</div>
+                <div class="msg" id="dictMsg"></div>
+            </section>
+
+            <section class="panel">
+                <div class="ph">
+                    <div>
+                        <h2>📊 Tahlil natijasi</h2>
+                        <div class="sub">Umumiy xulosa va ko‘rsatkichlar</div>
+                    </div><span class="pill" id="src">Natija kutilmoqda</span>
+                </div>
+                <div id="res" class="result">
+                    <div class="re">🧠</div><strong>Hali tahlil bajarilmadi</strong>
+                    <p>Matn kiriting yoki kamerani yoqing.</p>
+                </div>
+                <div id="sc" hidden></div>
+                <div class="chips" id="hits"></div>
+                <div class="adv" id="adv" hidden></div>
+            </section>
+
+            <section class="panel">
+                <div class="ph">
+                    <div>
+                        <h2>📷 Kamera orqali yuz ifodasi</h2>
+                        <div class="sub">Bir nechta kadr o‘rtachalanadi — barqaror natija</div>
+                    </div><span class="pill">Internet kerak</span>
+                </div>
+                <div class="cam">
+                    <div class="cph" id="camPh">
+                        <div class="e">📷</div><strong>Kamera o‘chiq</strong>
+                        <p>Avval kamerani yoqing.</p>
+                    </div><video id="v" autoplay playsinline muted hidden></video><canvas id="ov"></canvas>
+                </div>
+                <div class="act">
+                    <button id="bCam">Kamerani yoqish</button>
+                    <button id="bFace" disabled>Yuzni tahlil qilish</button>
+                    <button class="sec" id="bLive" disabled>Jonli rejim</button>
+                    <button class="sec" id="bCamOff" disabled>O‘chirish</button>
+                </div>
+                <div class="msg" id="camMsg" role="status"></div>
+            </section>
+
+            <section class="panel">
+                <div class="ph">
+                    <div>
+                        <h2>🎙️ Mikrofon signali</h2>
+                        <div class="sub">To‘lqin shakli va ovoz balandligi</div>
+                    </div><span class="pill">Jonli</span>
+                </div>
+                <canvas id="wave" width="600" height="90"></canvas>
+                <div class="meter">
+                    <div id="micFill"></div>
+                </div>
+                <div class="stats">
+                    <div><b id="micPct">0%</b>Joriy</div>
+                    <div><b id="micDb">−∞</b>dB</div>
+                    <div><b id="micAvg">0%</b>O‘rtacha</div>
+                    <div><b id="micPeak">0%</b>Eng yuqori</div>
+                </div>
+                <p class="sub" style="margin-top:12px">Holat: <strong id="micLab" style="color:var(--text)">—</strong>.
+                    Bu funksiya hissiyotni aniqlamaydi, faqat signal balandligini o‘lchaydi.</p>
+                <div class="act"><button id="bMic">Mikrofonni yoqish</button><button class="sec" id="bMicOff"
+                        disabled>To‘xtatish</button></div>
+                <div class="msg" id="micMsg">Mikrofon o‘chiq.</div>
+                <div class="notice">Kamera va mikrofon faqat tugmani bosganingizda ishga tushadi. Ma’lumotlar
+                    qurilmangizda qoladi (yuz modeli internetdan bir marta yuklanadi).</div>
+            </section>
+
+            <section class="panel full">
+                <div class="ph">
+                    <div>
+                        <h2>🧾 Tarix va hisobot</h2>
+                        <div class="sub">Oxirgi 50 ta tahlil brauzerda saqlanadi</div>
+                    </div>
+                </div>
+                <canvas id="trend" width="1100" height="110"></canvas>
+                <div id="hist"></div>
+                <div class="act">
+                    <button class="sec" id="bTxt">Hisobot (.txt)</button>
+                    <button class="sec" id="bCsv">Tarix (.csv)</button>
+                    <button class="sec" id="bJson">Tarix (.json)</button>
+                    <button class="dng" id="bClrHist">Tarixni tozalash</button>
+                    <button class="dng" id="bReset">Barchasini qayta boshlash</button>
+                </div>
+                <div class="msg" id="repMsg"></div>
+            </section>
+        </div>
+        <div class="footer">Neural Emotion Lab · Natijalar ma’lumot uchun, tibbiy tashxis emas. Yuz ifodasi ichki
+            hissiyotni aniq isbotlamaydi.</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.min.js"></script>
+    <script>
+        "use strict";
+        const $ = i => document.getElementById(i);
+        const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        const E = { joy: ["Quvonch", "😊", "#54e0d0"], sad: ["Xafalik", "😔", "#73a7ff"], anger: ["G‘azab", "😠", "#ff8585"], fear: ["Xavotir", "😟", "#f7c96b"], calm: ["Xotirjamlik", "😌", "#b6a0ff"], surprise: ["Hayrat", "😲", "#f18ac7"], disgust: ["Jirkanish", "🤢", "#9bd36a"], neutral: ["Neytral", "😐", "#9aabc8"] };
+        const VAL = { joy: 1, calm: .6, neutral: 0, surprise: .2, sad: -.8, anger: -1, fear: -.7, disgust: -.8 };
+        const OPP = { joy: "sad", sad: "calm", anger: "calm", fear: "calm", calm: "fear" };
+        const LEX = {
+            joy: "xursand quvon baxt ajoyib zo'r yaxshi mamnun sev muvaffaq rahmat rohat g'alaba a'lo kul mazza tabrik shod ilhom faxr go'zal",
+            sad: "xafa g'amgin g'am yomon afsus yolg'iz charcha tushkun umidsiz qiyin yig'l armon dard iztirob",
+            anger: "jahl g'azab asabiy nafrat bezor adolatsiz aldad",
+            fear: "xavotir qo'rq vahima bezovta tashvish hadik stress imtihon hayajon",
+            calm: "xotirjam hotirjam tinch sokin osoyishta huzur bemalol"
+        };
+        for (const k in LEX) LEX[k] = LEX[k].split(" ");
+        const NEG = ["emas", "yo'q", "yoq", "emasman", "emasdi"], INT = ["juda", "behad", "nihoyatda", "o'ta", "g'oyat", "benihoya"];
+        const PH = { "muammo yo'q": "calm", "dam olyapman": "calm", "dam oldim": "calm" };
+        const EMO = { "😊": "joy", "😄": "joy", "😁": "joy", "🥳": "joy", "❤️": "joy", "😢": "sad", "😭": "sad", "😔": "sad", "😡": "anger", "😠": "anger", "😨": "fear", "😟": "fear", "😰": "fear", "😌": "calm" };
+        const CY = { а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "yo", ж: "j", з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "x", ц: "ts", ч: "ch", ш: "sh", ъ: "'", ы: "i", ь: "", э: "e", ю: "yu", я: "ya", ў: "o'", қ: "q", ғ: "g'", ҳ: "h" };
+        const ADV = {
+            joy: "Yaxshi kayfiyatingizni qo‘llab-quvvatlaydigan ishlarni davom ettiring.",
+            sad: "O‘zingizga vaqt bering. Ishonchli inson bilan suhbatlashish foydali bo‘lishi mumkin.",
+            anger: "Tanaffus qiling, chuqur nafas oling va vaziyatni xotirjamlik bilan qayta ko‘rib chiqing.",
+            fear: "Vazifalarni kichik bosqichlarga ajratib, bittasidan boshlang.",
+            calm: "Sizga yordam berayotgan odatlarni davom ettiring.",
+            surprise: "Kutilmagan holat — vaziyatni baholab olish uchun biroz to‘xtab turing.",
+            disgust: "Sizni bezovta qilayotgan narsadan uzoqlashishga harakat qiling.",
+            neutral: "Aniq hissiy belgi topilmadi. Batafsilroq matn yozib qayta urinib ko‘ring."
+        };
+
+        function norm(t) {
+            return t.toLowerCase().replace(/[а-яёўқғҳъыь]/g, c => CY[c] ?? c).replace(/[‘’ʻʼ`´]/g, "'");
+        }
+        function scoreText(raw) {
+            let t = norm(raw); const s = { joy: 0, sad: 0, anger: 0, fear: 0, calm: 0 }, hits = [];
+            for (const p in PH) if (t.includes(p)) { s[PH[p]] += 1.5; hits.push([p, PH[p]]); t = t.split(p).join(" ") }
+            const w = t.split(/[^a-z0-9']+/).filter(Boolean);
+            w.forEach((x, i) => {
+                for (const k in LEX) {
+                    if (!LEX[k].some(st => x.startsWith(st))) continue;
+                    let key = k, v = INT.includes(w[i - 1]) ? 1.5 : 1;
+                    if (NEG.includes(w[i + 1]) && OPP[k]) key = OPP[k];
+                    s[key] += v; hits.push([x + (key !== k ? " " + w[i + 1] : ""), key]); break;
+                }
+            });
+            for (const e in EMO) { const n = raw.split(e).length - 1; if (n) { s[EMO[e]] += n; hits.push([e, EMO[e]]) } }
+            const top = Object.entries(s).sort((a, b) => b[1] - a[1])[0];
+            if (top[1] > 0) s[top[0]] *= 1 + Math.min((raw.match(/!/g) || []).length, 3) * .1;
+            const tot = Object.values(s).reduce((a, b) => a + b, 0);
+            if (!tot) return { dist: null, hits };
+            for (const k in s) s[k] /= tot;
+            return { dist: s, hits };
+        }
+
+        let cur = { text: null, face: null }, last = null, hist = [];
+        try { hist = JSON.parse(localStorage.getItem("nel_hist") || "[]") } catch (e) { }
+        const store = () => { try { localStorage.setItem("nel_hist", JSON.stringify(hist.slice(-50))) } catch (e) { } };
+
+        function fuse() {
+            const a = [cur.text, cur.face].filter(Boolean);
+            if (!a.length) return null;
+            const o = {}; a.forEach(d => { for (const k in d) o[k] = (o[k] || 0) + d[k] / a.length });
+            return o;
+        }
+        function render(save = true, hits) {
+            const d = fuse(); if (!d) return;
+            const src = cur.text && cur.face ? "Matn + yuz" : cur.text ? "Matn" : "Yuz";
+            const sorted = Object.entries(d).filter(e => e[1] > .004).sort((a, b) => b[1] - a[1]);
+            const [top, p] = sorted[0], m = E[top], pct = Math.round(p * 100);
+            const val = Object.entries(d).reduce((a, [k, v]) => a + v * (VAL[k] || 0), 0);
+            $("res").className = "result";
+            $("res").innerHTML = `<div class="re">${m[1]}</div><div class="rn">${m[0]}</div><div class="sub">Ishonch darajasi (taxminiy): ${pct}% · Kayfiyat ko‘rsatkichi: ${val > 0 ? "+" : ""}${val.toFixed(2)}</div>`;
+            $("sc").hidden = false;
+            $("sc").innerHTML = sorted.map(([k, v]) => `<div class="sr"><span>${E[k][1]} ${E[k][0]}</span><div class="track"><div class="fill" style="width:${Math.round(v * 100)}%;background:${E[k][2]}"></div></div><span class="sc">${Math.round(v * 100)}%</span></div>`).join("");
+            if (hits !== undefined) $("hits").innerHTML = hits.map(([w, k]) => `<span class="chip" style="color:${E[k][2]};border-color:${E[k][2]}">${esc(w)}</span>`).join("");
+            $("adv").hidden = false; $("adv").textContent = ADV[top];
+            $("src").textContent = src; $("appStatus").textContent = "Tahlil bajarildi";
+            last = { time: new Date().toLocaleString("uz-UZ"), src, top: m[0], pct, val: +val.toFixed(2), dist: Object.fromEntries(sorted.map(([k, v]) => [E[k][0], Math.round(v * 100)])), text: $("ti").value.trim() };
+            if (save) { hist.push({ t: last.time, src, top, pct, val: last.val }); hist = hist.slice(-50); store(); drawHist() }
+        }
+        function doText() {
+            const raw = $("ti").value.trim();
+            if (!raw) { $("res").className = "result"; $("res").textContent = "Iltimos, avval matn kiriting."; return }
+            const r = scoreText(raw);
+            cur.text = r.dist || { neutral: 1 };
+            render(true, r.hits);
+            if (!r.dist) $("adv").textContent = ADV.neutral;
+        }
+        $("bText").onclick = doText;
+        $("bSample").onclick = () => { $("ti").value = "Bugun juda yaxshi kun bo‘ldi. Ishlarim muvaffaqiyatli yakunlandi va bundan xursandman!"; doText() };
+        $("bClear").onclick = () => { $("ti").value = ""; cur.text = null; $("hits").innerHTML = ""; cur.face ? render(false, []) : blank() };
+        function blank() { $("sc").hidden = true; $("adv").hidden = true; $("src").textContent = "Natija kutilmoqda"; $("res").className = "result"; $("res").innerHTML = '<div class="re">🧠</div><strong>Hali tahlil bajarilmadi</strong><p>Matn kiriting yoki kamerani yoqing.</p>' }
+
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition; let rec = null;
+        $("bDict").onclick = () => {
+            if (!SR) { $("dictMsg").textContent = "Bu brauzer ovozni matnga aylantirishni qo‘llamaydi (Chrome/Edge tavsiya etiladi)."; return }
+            if (rec) { rec.stop(); return }
+            rec = new SR(); rec.lang = "uz-UZ"; rec.interimResults = true; rec.continuous = true;
+            const base = $("ti").value;
+            rec.onresult = e => { let s = ""; for (let i = 0; i < e.results.length; i++)s += e.results[i][0].transcript; $("ti").value = (base + " " + s).trim() };
+            rec.onerror = e => { $("dictMsg").textContent = e.error === "not-allowed" ? "Mikrofonga ruxsat berilmadi." : "Ovozni aniqlashda xato: " + e.error };
+            rec.onend = () => { rec = null; $("bDict").classList.remove("on"); $("bDict").textContent = "🎤 Ovoz bilan yozish"; $("dictMsg").textContent = ""; if ($("ti").value.trim()) doText() };
+            try { rec.start(); $("bDict").classList.add("on"); $("bDict").textContent = "⏹ To‘xtatish va tahlil"; $("dictMsg").textContent = "Tinglanmoqda… gapiring." } catch (e) { rec = null }
+        };
+
+        let cam = null, faceReady = false, loading = null, live = false;
+        async function startCam() {
+            try {
+                cam = await getMedia({ video: { facingMode: "user", width: { ideal: 640 } }, audio: false });
+                $("v").srcObject = cam; $("v").hidden = false; $("camPh").hidden = true; await $("v").play();
+                $("bCam").disabled = true; $("bCamOff").disabled = false; $("bFace").disabled = false; $("bLive").disabled = false;
+                $("camMsg").textContent = "Kamera ishlayapti. Yuzingizni yorug‘likka qarating.";
+                loadModel().catch(() => { });
+            } catch (e) {
+                $("camMsg").textContent = mediaErr(e, "Kamera");
+            }
+        }
+        function loadModel() {
+            if (faceReady) return Promise.resolve();
+            if (loading) return loading;
+            loading = (async () => {
+                $("camMsg").textContent = "Yuz tahlili modeli yuklanmoqda…";
+                if (!window.faceapi) throw new Error("Kutubxona yuklanmadi. Internetni tekshiring.");
+                const base = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/";
+                await Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri(base), faceapi.nets.faceExpressionNet.loadFromUri(base)]);
+                faceReady = true; $("camMsg").textContent = "Model tayyor.";
+            })();
+            loading.catch(e => { loading = null; $("camMsg").textContent = "Model yuklanmadi: " + (e.message || e) });
+            return loading;
+        }
+        const opts = () => new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: .35 });
+        async function sample() {
+            const v = $("v"), c = $("ov"); c.width = v.videoWidth; c.height = v.videoHeight;
+            const ctx = c.getContext("2d"); ctx.clearRect(0, 0, c.width, c.height);
+            const r = await faceapi.detectAllFaces(v, opts()).withFaceExpressions();
+            if (!r.length) return null;
+            const f = r.reduce((a, b) => b.detection.box.area > a.detection.box.area ? b : a);
+            const b = f.detection.box; ctx.strokeStyle = "#54e0d0"; ctx.lineWidth = 3; ctx.strokeRect(b.x, b.y, b.width, b.height);
+            const x = f.expressions;
+            return { joy: x.happy, sad: x.sad, anger: x.angry, fear: x.fearful, disgust: x.disgusted, surprise: x.surprised, neutral: x.neutral };
+        }
+        function avg(list) {
+            const o = {}; list.forEach(d => { for (const k in d) o[k] = (o[k] || 0) + d[k] / list.length }); return o;
+        }
+        async function analyzeFace() {
+            if (live) return;
+            $("bFace").disabled = true;
+            try {
+                if (!cam || !$("v").videoWidth) throw new Error("Avval kamerani yoqing va tasvir paydo bo‘lishini kuting.");
+                await loadModel();
+                const got = [];
+                for (let i = 0; i < 10; i++) {
+                    $("camMsg").textContent = `Tahlil qilinmoqda… ${i + 1}/10`;
+                    const s = await sample(); if (s) got.push(s); await sleep(150);
+                }
+                if (got.length < 3) throw new Error("Yuz aniqlanmadi. Yorug‘likni yaxshilang va yuzingizni kameraga qarating.");
+                cur.face = avg(got); render(true);
+                $("camMsg").textContent = `Tahlil tugadi (${got.length} ta kadr o‘rtachalandi).`;
+            } catch (e) { $("camMsg").textContent = e.message || "Tahlil bajarilmadi. Internetni tekshiring." }
+            finally { $("bFace").disabled = !cam }
+        }
+        async function toggleLive() {
+            if (live) { live = false; return }
+            try { await loadModel() } catch (e) { $("camMsg").textContent = e.message; return }
+            live = true; $("bLive").classList.add("on"); $("bLive").textContent = "Jonli: yoqilgan"; $("bFace").disabled = true;
+            let n = 0;
+            while (live && cam) {
+                try {
+                    const s = await sample();
+                    if (s) { cur.face = cur.face && n ? avg([cur.face, cur.face, s]) : s; n++; render(false); $("camMsg").textContent = "Jonli tahlil ishlayapti…" }
+                    else $("camMsg").textContent = "Yuz aniqlanmadi…";
+                } catch (e) { break }
+                await sleep(500);
+            }
+            live = false; $("bLive").classList.remove("on"); $("bLive").textContent = "Jonli rejim"; $("bFace").disabled = !cam;
+            if (n) { render(true) }
+        }
+        function stopCam() {
+            live = false;
+            if (cam) { cam.getTracks().forEach(t => t.stop()); cam = null }
+            $("v").srcObject = null; $("v").hidden = true; $("camPh").hidden = false;
+            const c = $("ov"); c.getContext("2d").clearRect(0, 0, c.width, c.height);
+            $("bCam").disabled = false; $("bCamOff").disabled = true; $("bFace").disabled = true; $("bLive").disabled = true;
+            $("camMsg").textContent = "Kamera o‘chirildi.";
+        }
+        $("bCam").onclick = startCam; $("bCamOff").onclick = stopCam; $("bFace").onclick = analyzeFace; $("bLive").onclick = toggleLive;
+
+        let mic = null, ac = null, an = null, raf = null, sum = 0, cnt = 0, peak = 0;
+        async function startMic() {
+            try {
+                mic = await getMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+                ac = new (window.AudioContext || window.webkitAudioContext)(); await ac.resume();
+                an = ac.createAnalyser(); an.fftSize = 1024; ac.createMediaStreamSource(mic).connect(an);
+                sum = cnt = peak = 0; $("bMic").disabled = true; $("bMicOff").disabled = false; $("micMsg").textContent = "Mikrofon faol. Gapirib ko‘ring.";
+                const d = new Uint8Array(an.fftSize), cv = $("wave"), g = cv.getContext("2d");
+                (function loop() {
+                    if (!an) return;
+                    an.getByteTimeDomainData(d);
+                    let s = 0; for (const x of d) { const v = (x - 128) / 128; s += v * v }
+                    const rms = Math.sqrt(s / d.length), p = Math.min(100, Math.round(rms * 300));
+                    sum += p; cnt++; peak = Math.max(peak, p);
+                    $("micFill").style.width = p + "\%"; $("micPct").textContent = p + "%";
+                    $("micDb").textContent = rms > 0.0005 ? Math.max(-60, Math.round(20 * Math.log10(rms))) : "−∞";
+                    $("micAvg").textContent = Math.round(sum / cnt) + "\%"; $("micPeak").textContent = peak + "%";
+                    $("micLab").textContent = p < 8 ? "Sokin" : p < 35 ? "Normal" : p < 65 ? "Baland" : "Juda baland";
+                    g.clearRect(0, 0, cv.width, cv.height); g.strokeStyle = "#54e0d0"; g.lineWidth = 2; g.beginPath();
+                    d.forEach((x, i) => { const X = i / d.length * cv.width, Y = x / 255 * cv.height; i ? g.lineTo(X, Y) : g.moveTo(X, Y) }); g.stroke();
+                    raf = requestAnimationFrame(loop);
+                })();
+            } catch (e) {
+                $("micMsg").textContent = mediaErr(e, "Mikrofon");
+                stopMic(false);
+            }
+        }
+        function stopMic(msg = true) {
+            if (raf) cancelAnimationFrame(raf); raf = null;
+            if (mic) { mic.getTracks().forEach(t => t.stop()); mic = null }
+            if (ac) { ac.close().catch(() => { }); ac = null }
+            an = null; $("micFill").style.width = "0\%"; $("micPct").textContent = "0%";
+            $("bMic").disabled = false; $("bMicOff").disabled = true;
+            const cv = $("wave"); cv.getContext("2d").clearRect(0, 0, cv.width, cv.height);
+            if (msg) $("micMsg").textContent = "Mikrofon to‘xtatildi.";
+        }
+        $("bMic").onclick = startMic; $("bMicOff").onclick = () => stopMic();
+
+        function drawHist() {
+            $("hist").innerHTML = hist.slice(-6).reverse().map(h => `<div class="hl"><span>${esc(h.t)} · ${esc(h.src)}</span><span>${E[h.top] ? E[h.top][1] + " " + E[h.top][0] : esc(h.top)} · ${h.pct}%</span></div>`).join("") || '<div class="sub">Tarix hozircha bo‘sh.</div>';
+            const cv = $("trend"), g = cv.getContext("2d"), W = cv.width, H = cv.height;
+            g.clearRect(0, 0, W, H); g.strokeStyle = "#2b3855"; g.beginPath(); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke();
+            if (hist.length < 2) { g.fillStyle = "#9aabc8"; g.font = "14px sans-serif"; g.fillText("Kayfiyat dinamikasi grafigi (kamida 2 ta tahlil kerak)", 14, H / 2 - 8); return }
+            g.strokeStyle = "#73a7ff"; g.lineWidth = 2; g.beginPath();
+            hist.forEach((h, i) => { const x = 10 + i / (hist.length - 1) * (W - 20), y = H / 2 - h.val * (H / 2 - 12); i ? g.lineTo(x, y) : g.moveTo(x, y) }); g.stroke();
+            hist.forEach((h, i) => { const x = 10 + i / (hist.length - 1) * (W - 20), y = H / 2 - h.val * (H / 2 - 12); g.fillStyle = (E[h.top] || E.neutral)[2]; g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill() });
+        }
+        function save(name, text, type) {
+            const u = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })), a = document.createElement("a");
+            a.href = u; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+            $("repMsg").textContent = "Fayl yuklab olindi: " + name;
+        }
+        $("bTxt").onclick = () => {
+            if (!last) { $("repMsg").textContent = "Avval tahlil bajaring."; return }
+            save("hissiyot-hisoboti.txt",
+                `NEURAL EMOTION LAB — HISOBOT\nVaqt: ${last.time}\nManba: ${last.src}\nNatija: ${last.top} (~${last.pct}%)\nKayfiyat ko‘rsatkichi: ${last.val}\n\nTaqsimot:\n${Object.entries(last.dist).map(([k, v]) => ` - ${k}:${v}%`).join("\n")}\n\n${last.text ? "Kiritilgan matn:\n" + last.text + "\n\n" : ""}Eslatma: natija taxminiy, tashxis emas.`, "text/plain");
+        };
+        $("bCsv").onclick = () => {
+            if (!hist.length) { $("repMsg").textContent = "Tarix bo‘sh."; return }
+            save("hissiyot-tarixi.csv", "\ufeffvaqt,manba,natija,ishonch,kayfiyat\n" + hist.map(h => [`"${h.t}"`, h.src, (E[h.top] || E.neutral)[0], h.pct, h.val].join(",")).join("\n"), "text/csv");
+        };
+        $("bJson").onclick = () => {
+            if (!hist.length) { $("repMsg").textContent = "Tarix bo‘sh."; return }
+            save("hissiyot-tarixi.json", JSON.stringify(hist, null, 2), "application/json");
+        };
+        $("bClrHist").onclick = () => { hist = []; store(); drawHist(); $("repMsg").textContent = "Tarix tozalandi." };
+        $("bReset").onclick = () => {
+            stopCam(); stopMic(false); if (rec) rec.stop();
+            $("ti").value = ""; cur = { text: null, face: null }; last = null; $("hits").innerHTML = "";
+            $("camMsg").textContent = ""; $("micMsg").textContent = "Mikrofon o‘chiq."; $("micLab").textContent = "—";
+            $("repMsg").textContent = ""; $("appStatus").textContent = "Tizim qayta boshlandi"; blank();
+        };
+        $("ti").addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doText() });
+
+        const INAPP = /Telegram|Instagram|FBAN|FBAV|Line\/|MiuiBrowser|; wv\)/i.test(navigator.userAgent);
+        const INFRAME = (() => { try { return window.self !== window.top } catch (e) { return true } })();
+        async function getMedia(c) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { const e = new Error("Brauzer kamera/mikrofonni bu sahifada qo‘llamaydi."); e.name = "NoMedia"; throw e }
+            try { return await navigator.mediaDevices.getUserMedia(c) }
+            catch (e) {
+                if (e.name === "OverconstrainedError" || e.name === "ConstraintNotSatisfiedError") return navigator.mediaDevices.getUserMedia(c.video ? { video: true, audio: false } : { audio: true });
+                throw e;
+            }
+        }
+        function mediaErr(e, what) {
+            const tip = " Yechim: faylni yuklab olib, Chrome yoki Edge’da alohida oching (yoki localhost orqali).";
+            switch (e && e.name) {
+                case "NotAllowedError": case "PermissionDeniedError":
+                    return what + "ga ruxsat berilmadi. Manzil satridagi 🔒 belgisini bosib ruxsat bering va sahifani yangilang." + (INFRAME || INAPP ? tip : "");
+                case "NotFoundError": case "DevicesNotFoundError": return what + " qurilmasi topilmadi. Qurilma ulanganini tekshiring.";
+                case "NotReadableError": case "TrackStartError": return what + "ni boshqa dastur (Zoom, Telegram, boshqa tab) band qilgan. Uni yoping va qayta urinib ko‘ring.";
+                case "SecurityError": return what + " xavfsizlik sababli bloklandi." + tip;
+                case "NoMedia": return e.message + tip;
+                default: return (e && e.message || what + " ishga tushmadi.") + (INFRAME || INAPP ? tip : "");
+            }
+        }
+        (function envCheck() {
+            const m = [];
+            if (!window.isSecureContext) m.push("Sahifa xavfsiz kontekstda emas (HTTPS yoki localhost kerak) — kamera va mikrofon bloklanadi.");
+            if (INFRAME) m.push("Sahifa boshqa ilova ichida (oldindan ko‘rish/iframe) ochilgan — bunday muhitda kamera va mikrofonga ruxsat berilmaydi.");
+            if (INAPP) m.push("Siz ilova ichki brauzerida (Telegram, Instagram va h.k.) ochgan bo‘lishingiz mumkin — ular kamerani cheklaydi.");
+            if (m.length) { $("env").hidden = false; $("env").innerHTML = "<strong>⚠️ Kamera/mikrofon ishlamasligi mumkin</strong><br>" + m.join("<br>") + "<br>Yechim: faylni yuklab olib, kompyuterda Chrome yoki Edge’da ikki marta bosib oching."; }
+        })();
+        drawHist();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Emotion Lab — Professional AI Hissiyot Tahlil Markazi</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6.5.1 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                            950: '#2e1065'
+                        },
+                        obsidian: '#070a13',
+                        panel: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg: #070a13;
+            --line: rgba(139, 92, 246, 0.18);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --blue: #8b5cf6;
+            --cyan: #06b6d4;
+            --glow: rgba(124, 58, 237, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.2), transparent 40%),
+                radial-gradient(circle at 90% 20%, rgba(99, 102, 241, 0.16), transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(217, 70, 239, 0.12), transparent 50%);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient floating blurred spheres */
+        .glow-sphere {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glassmorphism panel system */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(139, 92, 246, 0.38);
+            box-shadow: 0 24px 50px -12px rgba(124, 58, 237, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-card-subtle {
+            background: rgba(8, 12, 26, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 16px;
+        }
+
+        /* Glassmorphism modal */
+        .glass-modal {
+            background: rgba(11, 16, 33, 0.88);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 28px;
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.85), 0 0 50px rgba(124, 58, 237, 0.25);
+        }
+
+        /* Standard buttons */
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: 0;
+            border-radius: 14px;
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 13px;
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            color: #ffffff;
+            box-shadow: 0 4px 18px -2px rgba(124, 58, 237, 0.45);
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            outline: none;
+        }
+
+        button:hover:not(:disabled) {
+            filter: brightness(1.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -2px rgba(124, 58, 237, 0.65);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+            filter: none !important;
+        }
+
+        .sec {
+            background: rgba(19, 27, 49, 0.85) !important;
+            color: #cbd5e1 !important;
+            border: 1px solid rgba(139, 92, 246, 0.24) !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .sec:hover:not(:disabled) {
+            background: rgba(30, 41, 74, 0.95) !important;
+            color: #ffffff !important;
+            border-color: rgba(139, 92, 246, 0.45) !important;
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.3) !important;
+        }
+
+        .dng {
+            background: rgba(225, 29, 72, 0.16) !important;
+            color: #fca5a5 !important;
+            border: 1px solid rgba(225, 29, 72, 0.35) !important;
+            box-shadow: 0 4px 14px rgba(225, 29, 72, 0.18) !important;
+        }
+
+        .dng:hover:not(:disabled) {
+            background: rgba(225, 29, 72, 0.28) !important;
+            color: #ffffff !important;
+            border-color: rgba(225, 29, 72, 0.6) !important;
+            box-shadow: 0 6px 22px rgba(225, 29, 72, 0.4) !important;
+        }
+
+        .on {
+            background: linear-gradient(135deg, #06b6d4, #0284c7) !important;
+            color: #030712 !important;
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.65) !important;
+            border-color: #38bdf8 !important;
+            animation: pulseRecord 1.8s infinite;
+        }
+
+        @keyframes pulseRecord {
+            0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); }
+            50% { box-shadow: 0 0 35px rgba(6, 182, 212, 0.9); }
+        }
+
+        .wrap {
+            max-width: 1320px;
+            margin: auto;
+            padding: 28px 20px 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Pill Badge */
+        .pill {
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 9999px;
+            padding: 6px 14px;
+            color: #c4b5fd;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Textarea input */
+        textarea {
+            width: 100%;
+            min-height: 125px;
+            resize: vertical;
+            background: rgba(8, 12, 24, 0.85);
+            border: 1px solid rgba(139, 92, 246, 0.22);
+            border-radius: 16px;
+            padding: 14px 16px;
+            color: #f8fafc;
+            outline: none;
+            font-size: 14px;
+            line-height: 1.6;
+            transition: all 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.22), 0 0 20px rgba(124, 58, 237, 0.2);
+        }
+
+        /* Quick sample chips */
+        .sample-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            background: rgba(15, 23, 42, 0.6);
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .sample-pill:hover {
+            border-color: #8b5cf6;
+            background: rgba(124, 58, 237, 0.2);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Result container styling */
+        .result {
+            padding: 24px 16px;
+            text-align: center;
+            border: 1px dashed rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            background: rgba(8, 12, 24, 0.55);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .re {
+            font-size: 54px;
+            line-height: 1;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.45));
+            animation: bounceIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.6); opacity: 0; }
+            80% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .rn {
+            font-size: 26px;
+            font-weight: 800;
+            margin: 4px 0 8px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff, #c084fc);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+
+        /* Score rows for emotion breakdown */
+        .sr {
+            display: grid;
+            grid-template-columns: 130px 1fr 48px;
+            gap: 12px;
+            align-items: center;
+            margin: 9px 0;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .track {
+            height: 9px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 9999px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .sc {
+            text-align: right;
+            color: #cbd5e1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Psychological Advice banner */
+        .adv {
+            background: rgba(139, 92, 246, 0.08);
+            border: 1px solid rgba(139, 92, 246, 0.28);
+            border-left: 4px solid #8b5cf6;
+            padding: 14px 16px;
+            border-radius: 14px;
+            margin-top: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Keyword chips */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 14px;
+        }
+
+        .chip {
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            border: 1px solid;
+            background: rgba(8, 12, 24, 0.7);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Camera Viewport */
+        .cam {
+            position: relative;
+            aspect-ratio: 4/3;
+            background: #05070f;
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 20px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        .cam video,
+        .cam canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        /* Laser scanning line */
+        @keyframes laserAnim {
+            0% { top: 4%; opacity: 0.85; }
+            50% { top: 92%; opacity: 1; }
+            100% { top: 4%; opacity: 0.85; }
+        }
+
+        .scan-laser-line {
+            position: absolute;
+            left: 5%;
+            right: 5%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #8b5cf6 20%, #c084fc 50%, #8b5cf6 80%, transparent);
+            box-shadow: 0 0 16px #8b5cf6, 0 0 6px #ffffff;
+            border-radius: 9999px;
+            animation: laserAnim 2.2s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 25;
+        }
+
+        .cph {
+            text-align: center;
+            color: var(--muted);
+            padding: 24px 16px;
+        }
+
+        .cph .e {
+            font-size: 44px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.4));
+        }
+
+        .msg {
+            color: #38bdf8;
+            font-size: 12.5px;
+            margin-top: 10px;
+            overflow-wrap: anywhere;
+            min-height: 19px;
+            font-weight: 500;
+        }
+
+        /* Oscilloscope canvas */
+        #wave {
+            width: 100%;
+            height: 95px;
+            background: rgba(6, 9, 20, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            margin: 8px 0;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Microphone meter */
+        .meter {
+            height: 10px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.18);
+            border-radius: 9999px;
+            overflow: hidden;
+            margin: 10px 0 12px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        #micFill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899);
+            border-radius: 9999px;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.7);
+            transition: width 0.08s ease-out;
+        }
+
+        /* History items */
+        .hl {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            background: rgba(8, 12, 26, 0.6);
+            border: 1px solid rgba(139, 92, 246, 0.14);
+            border-radius: 14px;
+            font-size: 12.5px;
+            transition: all 0.2s ease;
+        }
+
+        .hl:hover {
+            background: rgba(19, 27, 49, 0.7);
+            border-color: rgba(139, 92, 246, 0.35);
+            transform: translateX(4px);
+        }
+
+        /* Trend canvas */
+        #trend {
+            width: 100%;
+            height: 120px;
+            background: rgba(6, 9, 20, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Global scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8b5cf6;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background glowing atmospheric light orbs (Athlio POS aesthetic) -->
+    <div class="glow-sphere w-[500px] h-[500px] bg-violet-600/18 blur-[150px] -top-32 -left-32 animate-pulse"></div>
+    <div class="glow-sphere w-[450px] h-[450px] bg-indigo-600/14 blur-[160px] top-1/3 -right-32"></div>
+    <div class="glow-sphere w-[400px] h-[400px] bg-fuchsia-600/10 blur-[140px] -bottom-32 left-1/4"></div>
+
+    <!-- ==================== OPERATOR AUTH / LOGIN MODAL ==================== -->
+    <div id="authModal" class="fixed inset-0 bg-[#04060d]/80 backdrop-blur-2xl z-[120] flex items-center justify-center p-4 transition-all duration-300" hidden>
+        <!-- Modal ambient glowing spheres -->
+        <div class="glow-sphere w-80 h-80 bg-violet-600/35 blur-[120px] -top-16 -left-16 animate-pulse"></div>
+        <div class="glow-sphere w-80 h-80 bg-fuchsia-600/25 blur-[120px] -bottom-16 -right-16"></div>
+
+        <div class="relative w-full max-w-md p-7 sm:p-8 glass-modal ring-1 ring-white/10 my-auto overflow-hidden">
+            <!-- Neon top gradient line -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-600 absolute top-0 left-0"></div>
+
+            <div class="flex justify-between items-start mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-white text-xl shadow-[0_0_20px_rgba(124,58,237,0.5)] border border-white/20">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white tracking-tight">Operator Kirishi</h3>
+                        <p class="text-xs text-violet-300 font-medium">Neural Emotion Lab v2.5 PRO</p>
+                    </div>
+                </div>
+                <button type="button" id="closeAuthModalBtn" class="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="operatorLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Operator / Mutaxassis:</label>
+                    <div class="relative">
+                        <input type="text" id="authOperatorName" value="Tadqiqotchi Operator" required
+                            class="w-full bg-[#080d1a] border border-violet-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none">
+                        <i class="fa-solid fa-user-tie absolute right-3.5 top-1/2 -translate-y-1/2 text-violet-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Xavfsizlik PIN Kodi:</label>
+                    <div class="relative">
+                        <input type="password" id="authOperatorPin" placeholder="PIN kod (standart: 1234)" value="1234" required
+                            class="w-full bg-[#080d1a] border border-violet-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono tracking-widest focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none">
+                        <i class="fa-solid fa-key absolute right-3.5 top-1/2 -translate-y-1/2 text-violet-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Tahlil Rejimi:</label>
+                    <select id="authLabMode" class="w-full bg-[#080d1a] border border-violet-500/30 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none cursor-pointer">
+                        <option value="research">🔬 Ilmiy tadqiqot & Laboratoriya</option>
+                        <option value="clinical">🩺 Psixologik & Klinik monitoring</option>
+                        <option value="retail">🛍️ POS & Mijozlar his-tuyg'usi (Retail)</option>
+                    </select>
+                </div>
+
+                <div class="p-3 bg-violet-950/40 border border-violet-500/20 rounded-xl text-[11px] text-violet-300 flex items-start gap-2">
+                    <i class="fa-solid fa-shield-halved text-violet-400 mt-0.5"></i>
+                    <span>Tizim 100% lokal ishlaydi. Kameradan va mikrofondan olingan tasvir va ovozlar serverga yuborilmaydi.</span>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider shadow-[0_4px_20px_rgba(124,58,237,0.5)]">
+                    Tizimga Kirish
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <!-- ==================== HEADER (Athlio POS Dashboard Style) ==================== -->
+        <header class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 flex items-center justify-center text-white text-2xl font-black shadow-[0_0_30px_rgba(124,58,237,0.6)] border border-white/20">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-[2px] bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-400 bg-clip-text text-transparent">
+                            NEURAL EMOTION LAB
+                        </span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                            PRO AI 2.5
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-0.5">
+                        Hissiyot va Emotsiya Tahlili
+                    </h1>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+                <!-- Clock -->
+                <div class="glass-card-subtle px-3.5 py-1.5 flex items-center gap-2 text-xs font-mono text-violet-300">
+                    <i class="fa-regular fa-clock text-violet-400"></i>
+                    <span id="headerClock">--:--:--</span>
+                </div>
+
+                <!-- Status pill -->
+                <div class="pill" id="appStatus">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Tizim tayyor</span>
+                </div>
+
+                <!-- Operator Profile modal toggle -->
+                <button type="button" id="openAuthModalBtn" class="sec text-xs font-bold py-2 px-3.5 rounded-xl flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-violet-400"></i>
+                    <span id="activeOperatorBadge">Operator: Rejim 1</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ==================== POS STYLE QUICK STATS STRIP ==================== -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5 mb-6">
+            <div class="glass-card-subtle p-3.5 flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-violet-600/20 text-violet-400 border border-violet-500/30 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] text-slate-400 font-medium">Jami tahlillar</div>
+                    <div id="statTotalCount" class="text-lg font-black font-mono text-white">0</div>
+                </div>
+            </div>
+
+            <div class="glass-card-subtle p-3.5 flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-face-smile"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] text-slate-400 font-medium">Asosiy kayfiyat</div>
+                    <div id="statDominantMood" class="text-sm font-extrabold text-emerald-300">Neytral</div>
+                </div>
+            </div>
+
+            <div class="glass-card-subtle p-3.5 flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-language"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] text-slate-400 font-medium">NLP Tizimi</div>
+                    <div class="text-xs font-bold text-cyan-300">O‘zbekcha Kengaytirilgan</div>
+                </div>
+            </div>
+
+            <div class="glass-card-subtle p-3.5 flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-fuchsia-600/20 text-fuchsia-400 border border-fuchsia-500/30 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] text-slate-400 font-medium">Xavfsizlik</div>
+                    <div class="text-xs font-bold text-fuchsia-300">100% Qurilmada (Lokal)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System environment notice (iframes / in-app warning) -->
+        <div class="adv" id="env" hidden style="margin:0 0 20px;border-color:#f59e0b;background:rgba(245,158,11,0.08);color:#fde68a"></div>
+
+        <!-- ==================== MAIN DASHBOARD GRID ==================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+            <!-- ==================== PANEL 1: MATN TAHLILI (7 COLS) ==================== -->
+            <section class="glass-panel p-5 lg:col-span-7 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400 text-sm">
+                                <i class="fa-solid fa-pen-nib"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white tracking-tight">✍️ Matn tahlili</h2>
+                                <div class="sub text-[11px]">8 xil emotsiya, inkor va kuchaytiruvchi qoidalar bilan</div>
+                            </div>
+                        </div>
+                        <span class="pill text-[11px]">Darhol tahlil</span>
+                    </div>
+
+                    <div class="relative">
+                        <textarea id="ti" placeholder="Masalan: Bugun juda xursandman, loyihamiz muvaffaqiyatli yakunlandi va hammasi ajoyib!"></textarea>
+                        <div class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-500" id="charCounter">0 ta belgi</div>
+                    </div>
+
+                    <!-- Quick sample pills for easy testing -->
+                    <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+                        <span class="text-[11px] text-slate-400 font-medium mr-1">Tezkor sinov:</span>
+                        <span class="sample-pill" data-text="Bugun juda baxtliman, loyihamiz muvaffaqiyatli topshirildi va hammasi ajoyib! 😊">🟢 Quvonch</span>
+                        <span class="sample-pill" data-text="Kayfiyatim umuman yo'q, hamma narsadan charchadim va juda xafaman... 😔">🔵 Xafalik</span>
+                        <span class="sample-pill" data-text="Asablarim tugadi! Nega doim shunaqa mas'uliyatsizlik qilishadi, jahl ustidaman! 😠">🔴 G'azab</span>
+                        <span class="sample-pill" data-text="Ertaga katta imtihon bor, juda bezovtaman va xavotir olyapman... 😟">🟡 Xavotir</span>
+                        <span class="sample-pill" data-text="Dam olish kunini sokin o'tkazmoqdaman, choy ichib osoyishta hordiq chiqaryapman. 😌">🟣 Xotirjamlik</span>
+                        <span class="sample-pill" data-text="Voybo'o'! Bu haqiqatan ham kutilmagan ajoyib mo'jiza bo'ldi, qoyil qoldim! 😲">🌸 Hayrat</span>
+                        <span class="sample-pill" data-text="Bu juda badbo'y va yoqimsiz iflos joy ekan, jirkanib ketdim. 🤢">🟤 Jirkanish</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2.5 mt-3.5">
+                        <button id="bText" type="button">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Tahlil qilish</span>
+                        </button>
+                        <button class="sec" id="bDict" type="button">
+                            <i class="fa-solid fa-microphone"></i>
+                            <span>Ovoz bilan yozish</span>
+                        </button>
+                        <button class="sec" id="bSample" type="button">
+                            <i class="fa-regular fa-lightbulb"></i>
+                            <span>Namuna</span>
+                        </button>
+                        <button class="sec" id="bClear" type="button">
+                            <i class="fa-regular fa-trash-can"></i>
+                            <span>Tozalash</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="hint text-xs text-slate-400 mt-3 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-violet-400 text-xs"></i>
+                        <span>O‘zbek tili leksikoni, o‘zaklar, iboralar (“muammo yo‘q”, “asabim buzildi”) va emojilar hisobga olinadi.</span>
+                    </div>
+                    <div class="msg" id="dictMsg"></div>
+                </div>
+            </section>
+
+            <!-- ==================== PANEL 2: TAHLIL NATIJASI (5 COLS) ==================== -->
+            <section class="glass-panel p-5 lg:col-span-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-3 mb-3.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-sm">
+                                <i class="fa-solid fa-chart-simple"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white tracking-tight">📊 Tahlil natijasi</h2>
+                                <div class="sub text-[11px]">Umumiy xulosa va ko‘rsatkichlar</div>
+                            </div>
+                        </div>
+                        <span class="pill text-[11px]" id="src">Natija kutilmoqda</span>
+                    </div>
+
+                    <div id="res" class="result">
+                        <div class="re">🧠</div>
+                        <strong class="text-base text-slate-200">Hali tahlil bajarilmadi</strong>
+                        <p class="text-xs text-slate-400 mt-1">Matn kiriting yoki kamerani yoqing.</p>
+                    </div>
+
+                    <div id="sc" class="mt-4" hidden></div>
+                    <div class="chips" id="hits"></div>
+                    <div class="adv" id="adv" hidden></div>
+                </div>
+            </section>
+
+            <!-- ==================== PANEL 3: KAMERA ORQALI YUZ IFODASI (7 COLS) ==================== -->
+            <section class="glass-panel p-5 lg:col-span-7 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-3 mb-3.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-fuchsia-600/20 border border-fuchsia-500/30 flex items-center justify-center text-fuchsia-400 text-sm">
+                                <i class="fa-solid fa-video"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white tracking-tight">📷 Kamera orqali yuz ifodasi</h2>
+                                <div class="sub text-[11px]">Face-API + Kiber HUD ramkasi bilan barqaror aniqlash</div>
+                            </div>
+                        </div>
+                        <span class="pill text-[11px]" id="modelStatusPill">
+                            <i class="fa-solid fa-microchip text-[10px] text-cyan-400"></i> AI Vision 2.5
+                        </span>
+                    </div>
+
+                    <!-- Model loader progress indicator -->
+                    <div id="modelProgressContainer" class="w-full mb-2 hidden">
+                        <div class="flex justify-between text-[11px] text-violet-300 mb-1">
+                            <span id="modelProgressText">Model yuklanmoqda…</span>
+                            <span id="modelProgressPct" class="font-mono">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                            <div id="modelProgressBar" class="bg-gradient-to-r from-violet-500 to-cyan-400 h-full w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+
+                    <div class="cam">
+                        <!-- Laser scan overlay line -->
+                        <div id="scanLaser" class="scan-laser-line hidden"></div>
+
+                        <div class="cph" id="camPh">
+                            <div class="e">📷</div>
+                            <strong class="text-base text-slate-200 block mb-1">Kamera o‘chiq</strong>
+                            <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                                «Kamerani yoqish» tugmasini bosing. AI modeli yuzingizdagi mikro-ifodalarni (tabassum, ajin, nigoh) xavfsiz tahlil qiladi.
+                            </p>
+                        </div>
+
+                        <video id="v" autoplay playsinline muted hidden></video>
+                        <canvas id="ov"></canvas>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2.5 mt-3.5">
+                        <button id="bCam" type="button">
+                            <i class="fa-solid fa-video"></i>
+                            <span>Kamerani yoqish</span>
+                        </button>
+                        <button id="bFace" type="button" disabled>
+                            <i class="fa-solid fa-expand"></i>
+                            <span>Yuzni tahlil qilish</span>
+                        </button>
+                        <button class="sec" id="bLive" type="button" disabled>
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Jonli rejim</span>
+                        </button>
+                        <button class="sec" id="bCamOff" type="button" disabled>
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>O‘chirish</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="msg" id="camMsg" role="status"></div>
+            </section>
+
+            <!-- ==================== PANEL 4: MIKROFON SIGNALI (5 COLS) ==================== -->
+            <section class="glass-panel p-5 lg:col-span-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between gap-3 mb-3.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-sm">
+                                <i class="fa-solid fa-waveform-lines"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-bold text-white tracking-tight">🎙️ Mikrofon signali</h2>
+                                <div class="sub text-[11px]">To‘lqin shakli va akustik amplituda</div>
+                            </div>
+                        </div>
+                        <span class="pill text-[11px]"><i class="fa-solid fa-circle text-emerald-400 text-[8px] animate-ping"></i> Jonli Akustika</span>
+                    </div>
+
+                    <!-- Glowing wave oscilloscope canvas -->
+                    <canvas id="wave" width="600" height="95"></canvas>
+
+                    <div class="meter">
+                        <div id="micFill"></div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 text-center text-[11px] text-slate-400">
+                        <div class="glass-card-subtle p-2">
+                            <b id="micPct" class="block font-mono text-sm text-cyan-400 font-bold">0%</b>
+                            <span>Joriy</span>
+                        </div>
+                        <div class="glass-card-subtle p-2">
+                            <b id="micDb" class="block font-mono text-sm text-violet-400 font-bold">−∞</b>
+                            <span>dB darajasi</span>
+                        </div>
+                        <div class="glass-card-subtle p-2">
+                            <b id="micAvg" class="block font-mono text-sm text-fuchsia-400 font-bold">0%</b>
+                            <span>O‘rtacha</span>
+                        </div>
+                        <div class="glass-card-subtle p-2">
+                            <b id="micPeak" class="block font-mono text-sm text-rose-400 font-bold">0%</b>
+                            <span>Eng yuqori</span>
+                        </div>
+                    </div>
+
+                    <div class="sub text-xs mt-3 flex items-center justify-between">
+                        <span>Ovoz holati: <strong id="micLab" class="text-white font-bold ml-1">—</strong></span>
+                        <span class="text-[11px] text-slate-500">Amplituda o‘lchovi</span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2.5 mt-3.5">
+                        <button id="bMic" type="button">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                            <span>Mikrofonni yoqish</span>
+                        </button>
+                        <button class="sec" id="bMicOff" type="button" disabled>
+                            <i class="fa-solid fa-microphone-slash"></i>
+                            <span>To‘xtatish</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="msg" id="micMsg">Mikrofon o‘chiq.</div>
+                    <div class="text-[11px] text-slate-400 mt-2 bg-slate-900/40 p-2.5 rounded-xl border border-slate-800">
+                        <i class="fa-solid fa-lock text-violet-400 mr-1.5"></i>
+                        Kamera va mikrofon faqat siz ruxsat berganingizda ishlaydi. Barcha jarayonlar faqat kompyuteringiz ichida amalga oshiriladi.
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PANEL 5: TARIX VA HISOBOT (12 COLS) ==================== -->
+            <section class="glass-panel p-5 lg:col-span-12">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base font-bold text-white tracking-tight">🧾 Tarix va hisobotlar markazi</h2>
+                            <div class="sub text-[11px]">Oxirgi 50 ta tahlil brauzer xotirasida (localStorage) saqlanadi</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button class="sec text-xs py-2 px-3 rounded-xl" id="bTxt" type="button">
+                            <i class="fa-solid fa-file-lines text-cyan-400"></i>
+                            <span>Hisobot (.txt)</span>
+                        </button>
+                        <button class="sec text-xs py-2 px-3 rounded-xl" id="bCsv" type="button">
+                            <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                            <span>Tarix (.csv)</span>
+                        </button>
+                        <button class="sec text-xs py-2 px-3 rounded-xl" id="bJson" type="button">
+                            <i class="fa-solid fa-file-code text-violet-400"></i>
+                            <span>Tarix (.json)</span>
+                        </button>
+                        <button class="dng text-xs py-2 px-3 rounded-xl" id="bClrHist" type="button">
+                            <i class="fa-regular fa-trash-can"></i>
+                            <span>Tarixni tozalash</span>
+                        </button>
+                        <button class="dng text-xs py-2 px-3 rounded-xl" id="bReset" type="button">
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
+                            <span>Barchasini qayta boshlash</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trend Chart canvas -->
+                <canvas id="trend" width="1200" height="120"></canvas>
+
+                <!-- History list container -->
+                <div id="hist" class="space-y-2 mt-3"></div>
+
+                <div class="msg mt-2 font-semibold" id="repMsg"></div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-slate-500 mt-8 font-medium">
+            Neural Emotion Lab · Barcha natijalar informatsion maqsadlarda ko‘rsatiladi. Yuz ifodasi ichki ruhiy holatni to‘liq ifodalamasligi mumkin.
+        </footer>
+    </div>
+
+    <!-- Face API Library (Local first with automatic CDN fallback) -->
+    <script src="models/face-api.min.js"></script>
+    <script>
+        if (!window.faceapi) {
+            console.log("Local face-api.min.js not found, loading from CDN...");
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.min.js"><\/script>');
+        }
+    </script>
+
+    <!-- Main Logic Script (PRO Level Architecture) -->
+    <script>
+        "use strict";
+        const $ = i => document.getElementById(i);
+        const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+        // Digital Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            if ($("headerClock")) $("headerClock").textContent = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Char counter
+        if ($("ti")) {
+            $("ti").addEventListener("input", () => {
+                const len = $("ti").value.length;
+                if ($("charCounter")) $("charCounter").textContent = `${len} ta belgi`;
+            });
+        }
+
+        // Quick sample pills handler
+        document.querySelectorAll(".sample-pill").forEach(el => {
+            el.addEventListener("click", () => {
+                const txt = el.getAttribute("data-text");
+                if (txt && $("ti")) {
+                    $("ti").value = txt;
+                    if ($("charCounter")) $("charCounter").textContent = `${txt.length} ta belgi`;
+                    doText();
+                }
+            });
+        });
+
+        // Operator Auth Modal logic (Athlio Style)
+        if ($("openAuthModalBtn") && $("authModal")) {
+            $("openAuthModalBtn").onclick = () => {
+                $("authModal").hidden = false;
+            };
+        }
+        if ($("closeAuthModalBtn") && $("authModal")) {
+            $("closeAuthModalBtn").onclick = () => {
+                $("authModal").hidden = true;
+            };
+        }
+        if ($("authModal")) {
+            $("authModal").onclick = (e) => {
+                if (e.target === $("authModal")) $("authModal").hidden = true;
+            };
+            window.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && !$("authModal").hidden) $("authModal").hidden = true;
+            });
+        }
+        if ($("operatorLoginForm")) {
+            $("operatorLoginForm").onsubmit = (e) => {
+                e.preventDefault();
+                const name = $("authOperatorName").value.trim() || "Operator";
+                $("activeOperatorBadge").textContent = "Operator: " + name;
+                $("authModal").hidden = true;
+                $("appStatus").innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Operator: ${esc(name)}</span>`;
+            };
+        }
+
+        // Emotion Definitions & Palette
+        const E = { 
+            joy: ["Quvonch", "😊", "#10b981"], 
+            sad: ["Xafalik", "😔", "#38bdf8"], 
+            anger: ["G‘azab", "😠", "#f43f5e"], 
+            fear: ["Xavotir", "😟", "#fbbf24"], 
+            calm: ["Xotirjamlik", "😌", "#a78bfa"], 
+            surprise: ["Hayrat", "😲", "#f472b6"], 
+            disgust: ["Jirkanish", "🤢", "#a3e635"], 
+            neutral: ["Neytral", "😐", "#94a3b8"] 
+        };
+        const VAL = { joy: 1, calm: .6, surprise: .3, neutral: 0, disgust: -.7, fear: -.75, sad: -.85, anger: -1 };
+        const OPP = { joy: "sad", sad: "calm", anger: "calm", fear: "calm", calm: "fear", surprise: "neutral", disgust: "calm" };
+
+        // Extensive Uzbek Sentiment Lexicon
+        const LEX = {
+            joy: [
+                "xursand", "quvon", "baxt", "ajoyib", "zo'r", "zor", "yaxshi", "mamnun", "sev", "muvaffaq",
+                "rahmat", "rohat", "g'alaba", "galaba", "a'lo", "alo", "kul", "mazza", "tabrik", "shod",
+                "ilhom", "faxr", "go'zal", "gozal", "super", "kayfiyat", "yutuq", "omad", "shirin",
+                "baraka", "tashakkur", "minnatdor", "yashang", "tabassum", "zavq", "shodlik", "bayram",
+                "nurli", "yorug'", "yorug", "yashna", "gullab", "go'zallik", "yondirdi", "gap yo'q", "gap yoq",
+                "sevimli", "qadrli", "ajoyib", "afzal", "oltin", "yulduz", "barakalla", "bayramona"
+            ],
+            sad: [
+                "xafa", "g'amgin", "gamgin", "g'am", "gam", "yomon", "afsus", "yolg'iz", "yolgiz", "charcha",
+                "tushkun", "umidsiz", "qiyin", "yig'l", "yigl", "armon", "dard", "iztirob", "alam", "og'riq",
+                "ogriq", "sog'in", "sogin", "azob", "motam", "hasrat", "ko'z yosh", "koz yosh", "g'amzada",
+                "yurak ezildi", "holsiz", "charchadim", "toliq", "yomonman", "ruhsiz", "og'ir", "ogir", "baxtsiz",
+                "alamli", "yetim", "ayanchli", "afsuski", "kulfat", "musibat", "xasta", "kasal", "ma'yus", "mayus"
+            ],
+            anger: [
+                "jahl", "g'azab", "gazab", "asabiy", "asab", "nafrat", "bezor", "adolatsiz", "aldad", "urush",
+                "janjal", "urish", "darg'azab", "badqovoq", "qarg'ish", "so'k", "sok", "haqorat", "buzuq",
+                "rasvo", "chiday", "jonimga", "yetar", "yo'qol", "yoqol", "alamzada",
+                "asabiylash", "tutaq", "qonim qayna", "tentak", "ahmoq", "axmoq", "ablax", "vaxshiy",
+                "itvachcha", "la'nat", "lanat", "sharmanda", "g'azablangan", "alamli", "qasd", "qasos"
+            ],
+            fear: [
+                "xavotir", "qo'rq", "qorq", "vahima", "bezovta", "tashvish", "hadik", "stress", "imtihon",
+                "hayajon", "tahlika", "vahimali", "tahdid", "xatar", "xavf", "sarosima", "titroq", "yurak duk",
+                "vahimada", "xavotirdaman", "qaltira", "yuragim yoril", "qo'rqinch", "qorqinch", "vahshat",
+                "qo'rqitdi", "vahimaga", "xatarli", "dahshatli", "xavfli", "hadiksirash", "bezovtalik"
+            ],
+            calm: [
+                "xotirjam", "hotirjam", "tinch", "sokin", "osoyishta", "huzur", "bemalol", "sabot", "bardosh",
+                "rohatlan", "dam ol", "sokinlik", "tinchlik", "osudalik", "orom", "vazmin", "bosiq", "shoshmasdan",
+                "muammosiz", "yengil", "hammasi joyida", "hech qisi yo'q", "tinchgina", "tinchlan", "salomat",
+                "orombaxsh", "farog'at", "farogat", "tinch-omon", "xavfsiz", "muvozanat", "huzurli"
+            ],
+            surprise: [
+                "hayrat", "hayron", "ajab", "kutilmagan", "mo'jiza", "mojiza", "shok", "dahshat", "daxshat",
+                "qoyil", "voy", "voybo'o'", "voyboo", "oho", "naqadar", "lol", "tasavvur", "syurpriz",
+                "yoqa ushladim", "aqlga sig'mas", "bunaqasi bo'lmagan", "kutilmaganda", "hayratlan", "hayratda"
+            ],
+            disgust: [
+                "jirkan", "jirkanch", "iflos", "badbo'y", "badboy", "yoqimsiz", "sasigan", "achigan", "harom",
+                "ko'ngil ayni", "qayt qil", "jirkanib", "jirkanarli", "irkit", "nopok", "murdor", "hazm qilolmay"
+            ]
+        };
+
+        const NEG = ["emas", "yo'q", "yoq", "emasman", "emasdi", "emasdir", "bo'lmadi", "bolmadi", "chiqmadi"];
+        const INT = ["juda", "behad", "nihoyatda", "o'ta", "ota", "g'oyat", "goyat", "benihoya", "rosa", "rostanam", "haqiqatan"];
+        
+        const PH = {
+            "muammo yo'q": "calm",
+            "muammo yoq": "calm",
+            "dam olyapman": "calm",
+            "dam oldim": "calm",
+            "hech qisi yo'q": "calm",
+            "hech qisi yoq": "calm",
+            "tinchlik bo'lsin": "calm",
+            "hammasi joyida": "calm",
+            "xavotir olmang": "calm",
+            "kayfiyatim yo'q": "sad",
+            "kayfiyatim yoq": "sad",
+            "kayfiyatim a'lo": "joy",
+            "kayfiyatim juda zo'r": "joy",
+            "gap yo'q": "joy",
+            "gap yoq": "joy",
+            "jonimga tegdi": "anger",
+            "asabim buzildi": "anger",
+            "asabiylashib ketdim": "anger",
+            "qonim qaynadi": "anger",
+            "yordam bering": "fear",
+            "yuragim yorildi": "fear",
+            "hayron qoldim": "surprise",
+            "yoqasini ushladi": "surprise",
+            "ko'nglim aynidi": "disgust",
+            "jirkanib ketdim": "disgust"
+        };
+
+        const EMO = {
+            "😊": "joy", "😄": "joy", "😁": "joy", "🥳": "joy", "❤️": "joy", "✨": "joy", "🎉": "joy", "😍": "joy", "🥰": "joy",
+            "😢": "sad", "😭": "sad", "😔": "sad", "💔": "sad", "🥺": "sad", "😞": "sad",
+            "😡": "anger", "😠": "anger", "🤬": "anger", "👿": "anger",
+            "😨": "fear", "😟": "fear", "😰": "fear", "😱": "fear", "😬": "fear",
+            "😌": "calm", "🧘": "calm", "☕": "calm", "🌿": "calm", "🕊️": "calm",
+            "😲": "surprise", "😮": "surprise", "🤯": "surprise", "😯": "surprise",
+            "🤢": "disgust", "🤮": "disgust", "💩": "disgust"
+        };
+
+        const CY = { а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "yo", ж: "j", з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "x", ц: "ts", ч: "ch", ш: "sh", ъ: "'", ы: "i", ь: "", э: "e", ю: "yu", я: "ya", ў: "o'", қ: "q", ғ: "g'", ҳ: "h" };
+        
+        const ADV = {
+            joy: "Yaxshi kayfiyatingizni qo‘llab-quvvatlaydigan ishlarni davom ettiring va boshqalarga ham ulashing.",
+            sad: "O‘zingizga vaqt bering. Yaqin inson bilan dildan suhbatlashish yoki toza havoda sayr qilish foydali bo‘ladi.",
+            anger: "Chuqur nafas oling (4-7-8 mashqi), 5 daqiqa tanaffus qiling va vaziyatni sovuq aql bilan baholang.",
+            fear: "Vaziyatni kichik qadamlarga ajrating va faqat hozir hal qila oladigan qismini bajaring.",
+            calm: "Ushbu xotirjamlik va osoyishta holatni saqlab qoling — bu aqliy samaradorlik uchun eng yaxshi holat.",
+            surprise: "Kutilmagan o‘zgarish — shoshilmasdan vaziyatni to‘liq baholab olish uchun biroz pauza qiling.",
+            disgust: "Sizni bezovta qilayotgan salbiy omildan yoki muhitdan uzoqlashishga harakat qiling.",
+            neutral: "Aniq emotsional qo‘zg‘alish topilmadi. Muvozanatli holatdasiz."
+        };
+
+        function norm(t) {
+            return t.toLowerCase().replace(/[а-яёўқғҳъыь]/g, c => CY[c] ?? c).replace(/[‘’ʻʼ`´]/g, "'");
+        }
+
+        function scoreText(raw) {
+            let t = norm(raw); 
+            const s = { joy: 0, sad: 0, anger: 0, fear: 0, calm: 0, surprise: 0, disgust: 0 }, hits = [];
+            
+            // Check multi-word phrase patterns
+            for (const p in PH) {
+                if (t.includes(p)) { 
+                    s[PH[p]] += 2.0; 
+                    hits.push([p, PH[p]]); 
+                    t = t.split(p).join(" "); 
+                }
+            }
+
+            const w = t.split(/[^a-z0-9']+/).filter(Boolean);
+            w.forEach((x, i) => {
+                for (const k in LEX) {
+                    if (!LEX[k].some(st => x.startsWith(st))) continue;
+                    let key = k;
+                    let v = INT.includes(w[i - 1]) ? 1.6 : 1.0;
+                    
+                    // Check negation right after or right before
+                    if ((NEG.includes(w[i + 1]) || NEG.includes(w[i - 1])) && OPP[k]) {
+                        key = OPP[k];
+                        hits.push([x + " (inkor)", key]);
+                    } else {
+                        hits.push([x, key]);
+                    }
+                    s[key] += v; 
+                    break;
+                }
+            });
+
+            // Check emojis
+            for (const e in EMO) { 
+                const n = raw.split(e).length - 1; 
+                if (n) { 
+                    s[EMO[e]] += n * 1.5; 
+                    hits.push([e, EMO[e]]); 
+                } 
+            }
+
+            const top = Object.entries(s).sort((a, b) => b[1] - a[1])[0];
+            if (top && top[1] > 0) {
+                const excls = (raw.match(/!/g) || []).length;
+                s[top[0]] *= 1 + Math.min(excls, 4) * 0.12;
+            }
+
+            const tot = Object.values(s).reduce((a, b) => a + b, 0);
+            if (!tot) return { dist: null, hits };
+            for (const k in s) s[k] /= tot;
+            return { dist: s, hits };
+        }
+
+        let cur = { text: null, face: null }, last = null, hist = [];
+        try { hist = JSON.parse(localStorage.getItem("nel_hist") || "[]") } catch (e) { }
+        const store = () => { try { localStorage.setItem("nel_hist", JSON.stringify(hist.slice(-50))) } catch (e) { } };
+
+        function updateDominantStat() {
+            if ($("statTotalCount")) $("statTotalCount").textContent = hist.length;
+            if (hist.length && $("statDominantMood")) {
+                const counts = {};
+                hist.forEach(h => counts[h.top] = (counts[h.top] || 0) + 1);
+                const dominant = Object.entries(counts).sort((a,b) => b[1] - a[1])[0];
+                if (dominant && E[dominant[0]]) {
+                    $("statDominantMood").textContent = E[dominant[0]][1] + " " + E[dominant[0]][0];
+                }
+            }
+        }
+
+        function fuse() {
+            const a = [cur.text, cur.face].filter(Boolean);
+            if (!a.length) return null;
+            const o = {}; 
+            a.forEach(d => { for (const k in d) o[k] = (o[k] || 0) + d[k] / a.length });
+            return o;
+        }
+
+        function render(save = true, hits) {
+            const d = fuse(); if (!d) return;
+            const src = cur.text && cur.face ? "Matn + yuz" : cur.text ? "Matn" : "Yuz";
+            const sorted = Object.entries(d).filter(e => e[1] > 0.005).sort((a, b) => b[1] - a[1]);
+            const [top, p] = sorted[0], m = E[top] || E.neutral, pct = Math.round(p * 100);
+            const val = Object.entries(d).reduce((a, [k, v]) => a + v * (VAL[k] || 0), 0);
+            
+            $("res").className = "result";
+            $("res").innerHTML = `
+                <div class="re">${m[1]}</div>
+                <div class="rn">${m[0]}</div>
+                <div class="sub flex items-center justify-center gap-2 mt-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 font-mono text-xs border border-violet-500/30 font-bold">
+                        Ishonch: ${pct}%
+                    </span>
+                    <span class="px-2.5 py-0.5 rounded-full ${val > 0 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : val < 0 ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : 'bg-slate-500/20 text-slate-300 border-slate-500/30'} font-mono text-xs border font-bold">
+                        Kayfiyat indeksi: ${val > 0 ? "+" : ""}${val.toFixed(2)}
+                    </span>
+                </div>`;
+            
+            $("sc").hidden = false;
+            $("sc").innerHTML = sorted.map(([k, v]) => `
+                <div class="sr">
+                    <span class="truncate">${(E[k] || E.neutral)[1]} ${(E[k] || E.neutral)[0]}</span>
+                    <div class="track">
+                        <div class="fill" style="width:${Math.round(v * 100)}%;background:${(E[k] || E.neutral)[2]}"></div>
+                    </div>
+                    <span class="sc">${Math.round(v * 100)}%</span>
+                </div>`).join("");
+            
+            if (hits !== undefined) {
+                $("hits").innerHTML = hits.map(([w, k]) => `
+                    <span class="chip" style="color:${(E[k] || E.neutral)[2]};border-color:${(E[k] || E.neutral)[2]}">
+                        <i class="fa-solid fa-tag text-[9px] mr-1"></i>${esc(w)}
+                    </span>`).join("");
+            }
+            
+            $("adv").hidden = false; 
+            $("adv").innerHTML = `<i class="fa-regular fa-lightbulb text-violet-400 mr-2"></i><strong>Tavsiya:</strong> ${ADV[top] || ADV.neutral}`;
+            $("src").textContent = src; 
+            $("appStatus").innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Tahlil bajarildi</span>`;
+            
+            last = { 
+                time: new Date().toLocaleString("uz-UZ"), 
+                src, 
+                top: m[0], 
+                pct, 
+                val: +val.toFixed(2), 
+                dist: Object.fromEntries(sorted.map(([k, v]) => [(E[k] || E.neutral)[0], Math.round(v * 100)])), 
+                text: $("ti").value.trim() 
+            };
+            
+            if (save) { 
+                hist.push({ t: last.time, src, top, pct, val: last.val }); 
+                hist = hist.slice(-50); 
+                store(); 
+                drawHist(); 
+                updateDominantStat();
+            }
+        }
+
+        function doText() {
+            const raw = $("ti").value.trim();
+            if (!raw) { 
+                $("res").className = "result"; 
+                $("res").innerHTML = `<div class="re">⚠️</div><strong class="text-amber-400">Iltimos, avval matn kiriting.</strong><p class="text-xs text-slate-400 mt-1">Yoki yuqoridagi tezkor sinov tugmalaridan birini bosing.</p>`; 
+                return; 
+            }
+            const r = scoreText(raw);
+            cur.text = r.dist || { neutral: 1 };
+            render(true, r.hits);
+            if (!r.dist) $("adv").textContent = ADV.neutral;
+        }
+
+        $("bText").onclick = doText;
+        $("bSample").onclick = () => { 
+            $("ti").value = "Bugun juda yaxshi kun bo‘ldi. Ishlarim muvaffaqiyatli yakunlandi va bundan xursandman!"; 
+            if ($("charCounter")) $("charCounter").textContent = `${$("ti").value.length} ta belgi`;
+            doText(); 
+        };
+        $("bClear").onclick = () => { 
+            $("ti").value = ""; 
+            if ($("charCounter")) $("charCounter").textContent = "0 ta belgi";
+            cur.text = null; 
+            $("hits").innerHTML = ""; 
+            cur.face ? render(false, []) : blank(); 
+        };
+
+        function blank() { 
+            $("sc").hidden = true; 
+            $("adv").hidden = true; 
+            $("src").textContent = "Natija kutilmoqda"; 
+            $("res").className = "result"; 
+            $("res").innerHTML = '<div class="re">🧠</div><strong class="text-base text-slate-200">Hali tahlil bajarilmadi</strong><p class="text-xs text-slate-400 mt-1">Matn kiriting yoki kamerani yoqing.</p>'; 
+        }
+
+        // Speech Recognition (Ovoz bilan yozish)
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition; 
+        let rec = null;
+        $("bDict").onclick = () => {
+            if (!SR) { 
+                $("dictMsg").textContent = "Bu brauzer ovozni matnga aylantirishni qo‘llamaydi (Google Chrome yoki Edge tavsiya etiladi)."; 
+                return; 
+            }
+            if (rec) { rec.stop(); return; }
+            rec = new SR(); 
+            rec.lang = "uz-UZ"; 
+            rec.interimResults = true; 
+            rec.continuous = true;
+            const base = $("ti").value;
+            rec.onresult = e => { 
+                let s = ""; 
+                for (let i = 0; i < e.results.length; i++) s += e.results[i][0].transcript; 
+                $("ti").value = (base + " " + s).trim(); 
+                if ($("charCounter")) $("charCounter").textContent = `${$("ti").value.length} ta belgi`;
+            };
+            rec.onerror = e => { 
+                $("dictMsg").textContent = e.error === "not-allowed" ? "Mikrofonga ruxsat berilmadi." : "Ovozni aniqlashda xato: " + e.error; 
+            };
+            rec.onend = () => { 
+                rec = null; 
+                $("bDict").classList.remove("on"); 
+                $("bDict").innerHTML = `<i class="fa-solid fa-microphone"></i><span>Ovoz bilan yozish</span>`; 
+                $("dictMsg").textContent = ""; 
+                if ($("ti").value.trim()) doText(); 
+            };
+            try { 
+                rec.start(); 
+                $("bDict").classList.add("on"); 
+                $("bDict").innerHTML = `<i class="fa-solid fa-stop text-red-500 animate-pulse"></i><span>To‘xtatish va tahlil</span>`; 
+                $("dictMsg").textContent = "🎙️ Tinglanmoqda… Gapiring."; 
+            } catch (e) { 
+                rec = null; 
+            }
+        };
+
+        // Computer Vision & Face-API System
+        let cam = null, faceReady = false, loading = null, live = false;
+
+        function showModelProgress(pct, text) {
+            const container = $("modelProgressContainer");
+            if (container) container.classList.remove("hidden");
+            if ($("modelProgressPct")) $("modelProgressPct").textContent = pct + "%";
+            if ($("modelProgressBar")) $("modelProgressBar").style.width = pct + "%";
+            if ($("modelProgressText")) $("modelProgressText").textContent = text;
+        }
+
+        function hideModelProgress() {
+            const container = $("modelProgressContainer");
+            if (container) container.classList.add("hidden");
+        }
+
+        async function startCam() {
+            try {
+                cam = await getMedia({ video: { facingMode: "user", width: { ideal: 640 } }, audio: false });
+                $("v").srcObject = cam; 
+                $("v").hidden = false; 
+                $("camPh").hidden = true; 
+                await $("v").play();
+                $("bCam").disabled = true; 
+                $("bCamOff").disabled = false; 
+                $("bFace").disabled = false; 
+                $("bLive").disabled = false;
+                $("camMsg").textContent = "Kamera faollashtirildi. Model tekshirilmoqda…";
+                loadModel().then(() => {
+                    $("camMsg").textContent = "Kamera tayyor. Yuzingizni kameraga qarating.";
+                }).catch(() => { });
+            } catch (e) {
+                $("camMsg").textContent = mediaErr(e, "Kamera");
+            }
+        }
+
+        function loadModel() {
+            if (faceReady) return Promise.resolve();
+            if (loading) return loading;
+            loading = (async () => {
+                showModelProgress(15, "AI modeli yuklanmoqda…");
+                if (!window.faceapi) throw new Error("FaceAPI kutubxonasi yuklanmadi. Brauzer yoki internetni tekshiring.");
+                
+                // Try local first, then fallback to CDN
+                try {
+                    showModelProgress(40, "Lokal model yuklanmoqda…");
+                    await Promise.all([
+                        faceapi.nets.tinyFaceDetector.loadFromUri("models/"), 
+                        faceapi.nets.faceExpressionNet.loadFromUri("models/")
+                    ]);
+                    showModelProgress(100, "Lokal model tayyor!");
+                } catch (localErr) {
+                    console.warn("Lokal modeldan yuklab bo'lmadi, CDN dan yuklanmoqda...", localErr);
+                    showModelProgress(60, "Internetdan (CDN) yuklanmoqda…");
+                    const base = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/";
+                    await Promise.all([
+                        faceapi.nets.tinyFaceDetector.loadFromUri(base), 
+                        faceapi.nets.faceExpressionNet.loadFromUri(base)
+                    ]);
+                    showModelProgress(100, "CDN modeli tayyor!");
+                }
+                faceReady = true; 
+                setTimeout(hideModelProgress, 1000);
+                if ($("modelStatusPill")) $("modelStatusPill").innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> AI Vision Faol';
+                $("camMsg").textContent = "Yuz tahlili modeli tayyor.";
+            })();
+            loading.catch(e => { 
+                loading = null; 
+                hideModelProgress();
+                $("camMsg").textContent = "Model yuklanmadi: " + (e.message || e); 
+            });
+            return loading;
+        }
+
+        // Slightly lower threshold for great sensitivity in typical indoor lighting
+        const opts = () => new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.22 });
+
+        async function sample() {
+            const v = $("v"), c = $("ov"); 
+            c.width = v.videoWidth; 
+            c.height = v.videoHeight;
+            const ctx = c.getContext("2d"); 
+            ctx.clearRect(0, 0, c.width, c.height);
+            const r = await faceapi.detectAllFaces(v, opts()).withFaceExpressions();
+            if (!r.length) return null;
+            const f = r.reduce((a, b) => b.detection.box.area > a.detection.box.area ? b : a);
+            const b = f.detection.box; 
+            
+            // Neon HUD bounding box
+            ctx.strokeStyle = "#8b5cf6"; 
+            ctx.lineWidth = 3; 
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = "rgba(139, 92, 246, 0.8)";
+            ctx.strokeRect(b.x, b.y, b.width, b.height);
+            
+            // Corner accents
+            const len = Math.min(20, b.width / 4);
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 4;
+            // Top-left
+            ctx.beginPath(); ctx.moveTo(b.x, b.y + len); ctx.lineTo(b.x, b.y); ctx.lineTo(b.x + len, b.y); ctx.stroke();
+            // Top-right
+            ctx.beginPath(); ctx.moveTo(b.x + b.width - len, b.y); ctx.lineTo(b.x + b.width, b.y); ctx.lineTo(b.x + b.width, b.y + len); ctx.stroke();
+            // Bottom-left
+            ctx.beginPath(); ctx.moveTo(b.x, b.y + b.height - len); ctx.lineTo(b.x, b.y + b.height); ctx.lineTo(b.x + len, b.y + b.height); ctx.stroke();
+            // Bottom-right
+            ctx.beginPath(); ctx.moveTo(b.x + b.width - len, b.y + b.height); ctx.lineTo(b.x + b.width, b.y + b.height); ctx.lineTo(b.x + b.width, b.y + len); ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            const x = f.expressions;
+            const emotionScores = { joy: x.happy, sad: x.sad, anger: x.angry, fear: x.fearful, disgust: x.disgusted, surprise: x.surprised, neutral: x.neutral };
+            const topEntry = Object.entries(emotionScores).sort((k1, k2) => k2[1] - k1[1])[0];
+            const topEm = E[topEntry[0]] || E.neutral;
+            const topPct = Math.round(topEntry[1] * 100);
+
+            // Draw un-flipped readable text tag above face box
+            ctx.save();
+            ctx.translate(b.x + b.width / 2, Math.max(24, b.y - 12));
+            ctx.scale(-1, 1); // Un-flip so text is readable on mirrored canvas
+            
+            const tagText = `${topEm[1]} ${topEm[0]} ${topPct}%`;
+            ctx.font = "bold 13px 'Plus Jakarta Sans', system-ui, sans-serif";
+            const textWidth = ctx.measureText(tagText).width;
+            
+            ctx.fillStyle = "rgba(7, 10, 19, 0.88)";
+            ctx.strokeStyle = topEm[2];
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.roundRect(-textWidth / 2 - 8, -16, textWidth + 16, 22, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.fillText(tagText, 0, 0);
+            ctx.restore();
+
+            return emotionScores;
+        }
+
+        function avg(list) {
+            const o = {}; 
+            list.forEach(d => { for (const k in d) o[k] = (o[k] || 0) + d[k] / list.length }); 
+            return o;
+        }
+
+        async function analyzeFace() {
+            if (live) return;
+            $("bFace").disabled = true;
+            if ($("scanLaser")) $("scanLaser").classList.remove("hidden");
+            try {
+                if (!cam || !$("v").videoWidth) throw new Error("Avval kamerani yoqing va tasvir paydo bo‘lishini kuting.");
+                await loadModel();
+                const got = [];
+                for (let i = 0; i < 10; i++) {
+                    $("camMsg").textContent = `Tahlil qilinmoqda… ${i + 1}/10 kadr`;
+                    const s = await sample(); 
+                    if (s) got.push(s); 
+                    await sleep(140);
+                }
+                if (got.length < 1) throw new Error("Yuz aniqlanmadi. Yorug‘likni yaxshilang va yuzingizni kameraga to‘g‘ri tuting.");
+                cur.face = avg(got); 
+                render(true);
+                $("camMsg").textContent = `Yuz tahlili yakunlandi (${got.length} ta kadr o‘rtachalandi).`;
+            } catch (e) { 
+                $("camMsg").textContent = e.message || "Tahlil bajarilmadi."; 
+            }
+            finally { 
+                $("bFace").disabled = !cam; 
+                if ($("scanLaser")) $("scanLaser").classList.add("hidden");
+            }
+        }
+
+        async function toggleLive() {
+            if (live) { live = false; return; }
+            try { await loadModel(); } catch (e) { $("camMsg").textContent = e.message; return; }
+            live = true; 
+            $("bLive").classList.add("on"); 
+            $("bLive").innerHTML = `<i class="fa-solid fa-bolt text-yellow-300"></i><span>Jonli: Faol</span>`; 
+            $("bFace").disabled = true;
+            if ($("scanLaser")) $("scanLaser").classList.remove("hidden");
+            let n = 0;
+            while (live && cam) {
+                try {
+                    const s = await sample();
+                    if (s) { 
+                        cur.face = cur.face && n ? avg([cur.face, cur.face, s]) : s; 
+                        n++; 
+                        render(false); 
+                        $("camMsg").textContent = "Jonli neyron tahlil ishlamoqda…"; 
+                    } else { 
+                        $("camMsg").textContent = "Yuz qidirilmoqda…"; 
+                    }
+                } catch (e) { break; }
+                await sleep(350);
+            }
+            live = false; 
+            $("bLive").classList.remove("on"); 
+            $("bLive").innerHTML = `<i class="fa-solid fa-bolt"></i><span>Jonli rejim</span>`; 
+            $("bFace").disabled = !cam;
+            if ($("scanLaser")) $("scanLaser").classList.add("hidden");
+            if (n) render(true);
+        }
+
+        function stopCam() {
+            live = false;
+            if ($("scanLaser")) $("scanLaser").classList.add("hidden");
+            if (cam) { cam.getTracks().forEach(t => t.stop()); cam = null; }
+            $("v").srcObject = null; 
+            $("v").hidden = true; 
+            $("camPh").hidden = false;
+            const c = $("ov"); 
+            c.getContext("2d").clearRect(0, 0, c.width, c.height);
+            $("bCam").disabled = false; 
+            $("bCamOff").disabled = true; 
+            $("bFace").disabled = true; 
+            $("bLive").disabled = true;
+            $("camMsg").textContent = "Kamera to‘xtatildi.";
+        }
+
+        $("bCam").onclick = startCam; 
+        $("bCamOff").onclick = stopCam; 
+        $("bFace").onclick = analyzeFace; 
+        $("bLive").onclick = toggleLive;
+
+        // Microphone & Waveform Visualizer
+        let mic = null, ac = null, an = null, raf = null, sum = 0, cnt = 0, peak = 0;
+        async function startMic() {
+            try {
+                mic = await getMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+                ac = new (window.AudioContext || window.webkitAudioContext)(); 
+                if (ac.state === "suspended") await ac.resume();
+                an = ac.createAnalyser(); 
+                an.fftSize = 1024; 
+                ac.createMediaStreamSource(mic).connect(an);
+                sum = cnt = peak = 0; 
+                $("bMic").disabled = true; 
+                $("bMicOff").disabled = false; 
+                $("micMsg").textContent = "Mikrofon faol. Gapiring yoki tovush chiqaring.";
+                
+                const d = new Uint8Array(an.fftSize);
+                const cv = $("wave");
+                const dpr = window.devicePixelRatio || 1;
+                cv.width = cv.clientWidth * dpr;
+                cv.height = cv.clientHeight * dpr;
+                const g = cv.getContext("2d");
+                
+                (function loop() {
+                    if (!an) return;
+                    an.getByteTimeDomainData(d);
+                    let s = 0; for (const x of d) { const v = (x - 128) / 128; s += v * v }
+                    const rms = Math.sqrt(s / d.length), p = Math.min(100, Math.round(rms * 320));
+                    sum += p; cnt++; peak = Math.max(peak, p);
+                    
+                    $("micFill").style.width = p + "%"; 
+                    $("micPct").textContent = p + "%";
+                    $("micDb").textContent = rms > 0.0005 ? Math.max(-60, Math.round(20 * Math.log10(rms))) : "−∞";
+                    $("micAvg").textContent = Math.round(sum / cnt) + "%"; 
+                    $("micPeak").textContent = peak + "%";
+                    $("micLab").textContent = p < 8 ? "Sokin" : p < 35 ? "Normal" : p < 65 ? "Baland" : "Juda baland";
+                    
+                    // High-tech glowing neon waveform
+                    g.clearRect(0, 0, cv.width, cv.height);
+                    const waveGrad = g.createLinearGradient(0, 0, cv.width, 0);
+                    waveGrad.addColorStop(0, "#06b6d4");
+                    waveGrad.addColorStop(0.5, "#8b5cf6");
+                    waveGrad.addColorStop(1, "#f43f5e");
+                    
+                    g.strokeStyle = waveGrad; 
+                    g.lineWidth = 2.5 * dpr; 
+                    g.shadowBlur = 8 * dpr;
+                    g.shadowColor = "rgba(139, 92, 246, 0.8)";
+                    g.beginPath();
+                    d.forEach((x, i) => { 
+                        const X = (i / d.length) * cv.width;
+                        const Y = (x / 255) * cv.height; 
+                        i ? g.lineTo(X, Y) : g.moveTo(X, Y); 
+                    }); 
+                    g.stroke();
+                    g.shadowBlur = 0;
+                    
+                    raf = requestAnimationFrame(loop);
+                })();
+            } catch (e) {
+                $("micMsg").textContent = mediaErr(e, "Mikrofon");
+                stopMic(false);
+            }
+        }
+
+        function stopMic(msg = true) {
+            if (raf) cancelAnimationFrame(raf); raf = null;
+            if (mic) { mic.getTracks().forEach(t => t.stop()); mic = null; }
+            if (ac) { ac.close().catch(() => { }); ac = null; }
+            an = null; 
+            $("micFill").style.width = "0%"; 
+            $("micPct").textContent = "0%";
+            $("bMic").disabled = false; 
+            $("bMicOff").disabled = true;
+            const cv = $("wave"); 
+            cv.getContext("2d").clearRect(0, 0, cv.width, cv.height);
+            if (msg) $("micMsg").textContent = "Mikrofon to‘xtatildi.";
+        }
+
+        $("bMic").onclick = startMic; 
+        $("bMicOff").onclick = () => stopMic();
+
+        // History Trend Dynamics Chart
+        function drawHist() {
+            $("hist").innerHTML = hist.slice(-6).reverse().map(h => `
+                <div class="hl">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-violet-400 text-xs"></i>
+                        <span class="font-medium">${esc(h.t)}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300 border border-violet-500/25">${esc(h.src)}</span>
+                    </span>
+                    <span class="font-semibold flex items-center gap-2">
+                        <span>${E[h.top] ? E[h.top][1] + " " + E[h.top][0] : esc(h.top)}</span>
+                        <span class="font-mono text-xs px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700/50">${h.pct}%</span>
+                    </span>
+                </div>`).join("") || '<div class="sub text-center py-6">Tarix hozircha bo‘sh. Birinchi tahlilni bajaring!</div>';
+            
+            const cv = $("trend");
+            const dpr = window.devicePixelRatio || 1;
+            const W = cv.clientWidth || 1100;
+            const H = cv.clientHeight || 120;
+            cv.width = W * dpr;
+            cv.height = H * dpr;
+            
+            const g = cv.getContext("2d");
+            g.scale(dpr, dpr);
+            g.clearRect(0, 0, W, H);
+            
+            // Grid background
+            g.strokeStyle = "rgba(139, 92, 246, 0.12)";
+            g.lineWidth = 1;
+            g.beginPath();
+            g.moveTo(0, H / 4); g.lineTo(W, H / 4);
+            g.moveTo(0, H * 3 / 4); g.lineTo(W, H * 3 / 4);
+            g.stroke();
+
+            // Zero baseline
+            g.strokeStyle = "rgba(139, 92, 246, 0.3)"; 
+            g.lineWidth = 1.5;
+            g.beginPath(); 
+            g.moveTo(0, H / 2); 
+            g.lineTo(W, H / 2); 
+            g.stroke();
+
+            if (hist.length < 2) { 
+                g.fillStyle = "#94a3b8"; 
+                g.font = "600 13px 'Plus Jakarta Sans', sans-serif"; 
+                g.textAlign = "center";
+                g.fillText("Kayfiyat dinamikasi grafigi (kamida 2 ta tahlil kerak)", W / 2, H / 2 + 5); 
+                return; 
+            }
+
+            // Gradient area fill
+            const grad = g.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, "rgba(139, 92, 246, 0.25)");
+            grad.addColorStop(0.5, "rgba(139, 92, 246, 0.04)");
+            grad.addColorStop(1, "rgba(139, 92, 246, 0.25)");
+
+            g.beginPath();
+            hist.forEach((h, i) => { 
+                const x = 20 + i / (hist.length - 1) * (W - 40);
+                const y = H / 2 - h.val * (H / 2 - 16); 
+                i ? g.lineTo(x, y) : g.moveTo(x, y); 
+            });
+            g.lineTo(20 + (W - 40), H / 2);
+            g.lineTo(20, H / 2);
+            g.closePath();
+            g.fillStyle = grad;
+            g.fill();
+
+            // Glowing Trend line
+            g.strokeStyle = "#8b5cf6"; 
+            g.lineWidth = 3; 
+            g.shadowBlur = 10;
+            g.shadowColor = "#8b5cf6";
+            g.beginPath();
+            hist.forEach((h, i) => { 
+                const x = 20 + i / (hist.length - 1) * (W - 40);
+                const y = H / 2 - h.val * (H / 2 - 16); 
+                i ? g.lineTo(x, y) : g.moveTo(x, y); 
+            }); 
+            g.stroke();
+            g.shadowBlur = 0;
+
+            // Trend Points
+            hist.forEach((h, i) => { 
+                const x = 20 + i / (hist.length - 1) * (W - 40);
+                const y = H / 2 - h.val * (H / 2 - 16); 
+                const col = (E[h.top] || E.neutral)[2];
+                g.shadowBlur = 10;
+                g.shadowColor = col;
+                g.fillStyle = col; 
+                g.beginPath(); 
+                g.arc(x, y, 5, 0, Math.PI * 2); 
+                g.fill(); 
+                g.fillStyle = "#ffffff";
+                g.beginPath();
+                g.arc(x, y, 2, 0, Math.PI * 2);
+                g.fill();
+            });
+            g.shadowBlur = 0;
+        }
+
+        // File exports
+        function save(name, text, type) {
+            const u = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" })), a = document.createElement("a");
+            a.href = u; 
+            a.download = name; 
+            a.click(); 
+            setTimeout(() => URL.revokeObjectURL(u), 1000);
+            $("repMsg").textContent = "Fayl muvaffaqiyatli yuklab olindi: " + name;
+        }
+
+        $("bTxt").onclick = () => {
+            if (!last) { $("repMsg").textContent = "Avval tahlil bajaring."; return; }
+            save("hissiyot-hisoboti.txt",
+                `NEURAL EMOTION LAB — PROFESSIONAL HISOBOT\nVaqt: ${last.time}\nManba: ${last.src}\nNatija: ${last.top} (~${last.pct}%)\nKayfiyat ko‘rsatkichi: ${last.val}\n\nTaqsimot:\n${Object.entries(last.dist).map(([k, v]) => ` - ${k}:${v}%`).join("\n")}\n\n${last.text ? "Kiritilgan matn:\n" + last.text + "\n\n" : ""}Eslatma: natija taxminiy, tibbiy tashxis emas.`, "text/plain");
+        };
+
+        $("bCsv").onclick = () => {
+            if (!hist.length) { $("repMsg").textContent = "Tarix bo‘sh."; return; }
+            save("hissiyot-tarixi.csv", "\ufeffvaqt,manba,natija,ishonch,kayfiyat\n" + hist.map(h => [`"${h.t}"`, h.src, (E[h.top] || E.neutral)[0], h.pct, h.val].join(",")).join("\n"), "text/csv");
+        };
+
+        $("bJson").onclick = () => {
+            if (!hist.length) { $("repMsg").textContent = "Tarix bo‘sh."; return; }
+            save("hissiyot-tarixi.json", JSON.stringify(hist, null, 2), "application/json");
+        };
+
+        $("bClrHist").onclick = () => { 
+            hist = []; 
+            store(); 
+            drawHist(); 
+            updateDominantStat();
+            $("repMsg").textContent = "Tarix tozalandi."; 
+        };
+
+        $("bReset").onclick = () => {
+            stopCam(); 
+            stopMic(false); 
+            if (rec) rec.stop();
+            $("ti").value = ""; 
+            if ($("charCounter")) $("charCounter").textContent = "0 ta belgi";
+            cur = { text: null, face: null }; 
+            last = null; 
+            $("hits").innerHTML = "";
+            $("camMsg").textContent = ""; 
+            $("micMsg").textContent = "Mikrofon o‘chiq."; 
+            $("micLab").textContent = "—";
+            $("repMsg").textContent = ""; 
+            $("appStatus").innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Tizim qayta boshlandi</span>`; 
+            blank();
+        };
+
+        $("ti").addEventListener("keydown", e => { 
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") doText(); 
+        });
+
+        // Environment inspection
+        const INAPP = /Telegram|Instagram|FBAN|FBAV|Line\/|MiuiBrowser|; wv\)/i.test(navigator.userAgent);
+        const INFRAME = (() => { try { return window.self !== window.top } catch (e) { return true } })();
+
+        async function getMedia(c) {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { 
+                const e = new Error("Brauzer kamera/mikrofonni bu sahifada qo‘llamaydi."); 
+                e.name = "NoMedia"; 
+                throw e; 
+            }
+            try { 
+                return await navigator.mediaDevices.getUserMedia(c); 
+            } catch (e) {
+                if (e.name === "OverconstrainedError" || e.name === "ConstraintNotSatisfiedError") {
+                    return navigator.mediaDevices.getUserMedia(c.video ? { video: true, audio: false } : { audio: true });
+                }
+                throw e;
+            }
+        }
+
+        function mediaErr(e, what) {
+            const tip = " Yechim: http://localhost:3000 orqali oching yoki Chrome/Edge xavfsizlik sozlamalarini tekshiring.";
+            switch (e && e.name) {
+                case "NotAllowedError": 
+                case "PermissionDeniedError":
+                    return what + "ga ruxsat berilmadi. Manzil satridagi 🔒 belgisini bosib ruxsat bering va sahifani yangilang." + (INFRAME || INAPP ? tip : "");
+                case "NotFoundError": 
+                case "DevicesNotFoundError": 
+                    return what + " qurilmasi topilmadi. Qurilma ulanganini tekshiring.";
+                case "NotReadableError": 
+                case "TrackStartError": 
+                    return what + "ni boshqa dastur (Zoom, Telegram, boshqa tab) band qilgan. Uni yoping va qayta urinib ko‘ring.";
+                case "SecurityError": 
+                    return what + " xavfsizlik sababli bloklandi." + tip;
+                case "NoMedia": 
+                    return e.message + tip;
+                default: 
+                    return (e && e.message || what + " ishga tushmadi.") + (INFRAME || INAPP ? tip : "");
+            }
+        }
+
+        (function envCheck() {
+            const m = [];
+            if (!window.isSecureContext) m.push("Sahifa xavfsiz kontekstda emas (HTTPS yoki localhost kerak) — kamera va mikrofon bloklanishi mumkin.");
+            if (INFRAME) m.push("Sahifa boshqa ilova ichida (iframe) ochilgan — kamera va mikrofonga ruxsat berilmaydi.");
+            if (INAPP) m.push("Siz ilova ichki brauzerida ochgansiz (Telegram, Instagram) — ular apparat qurilmalarini cheklaydi.");
+            if (m.length) { 
+                $("env").hidden = false; 
+                $("env").innerHTML = "<strong>⚠️ Qurilmalar ogohlantirishi</strong><br>" + m.join("<br>") + "<br>Tavsiya: Brauzerda http://localhost:3000 orqali oching."; 
+            }
+        })();
+
+        // Initial setup
+        window.addEventListener("resize", () => {
+            drawHist();
+        });
+
+        drawHist();
+        updateDominantStat();
+    </script>
+</body>
+
+</html>
